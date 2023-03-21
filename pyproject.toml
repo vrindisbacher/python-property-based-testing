@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pybt"
+version = "0.1.0"
+description = "Property Based Testing in Python"
+authors = ["vrindisbacher <vrindisbacher77@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "pybt" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<=3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
