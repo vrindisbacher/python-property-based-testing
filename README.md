@@ -17,7 +17,7 @@ def factorial(x):
 def test_factorial(x: int):
     a = factorial(x)
     pred = factorial(x - 1)
-    assert a == x * pred
+    assert(a == x * pred)
 
 
 test_factorial()
