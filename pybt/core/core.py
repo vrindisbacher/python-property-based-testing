@@ -31,10 +31,11 @@ def _set_args(arg_to_generator_map, type_hints, generators):
             else:
                 arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type]
         else:
-            raise Exception("Only base types are supported")
+            # TODO : get all sub args generically 
             # base_type = typing.get_origin(arg_type)
             # sub_types = typing.get_args(arg_type)
             # print(base_type, sub_types)
+            raise Exception("Only base types are supported")
 
 
 def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
