@@ -17,7 +17,7 @@ def factorial(x):
 def test_factorial(x: int):
     a = factorial(x)
     pred = factorial(x - 1)
-    assert a == x * pred
+    assert(a == x * pred)
 
 
 test_factorial()
@@ -25,7 +25,7 @@ test_factorial()
 
 Here, we test a function called `factorial`, using a "universally quantified proposition" which is expressed as a function. 
 ```
-forall x, x <= 1 <= 1 -> factorial(x) == x * factorial(x)
+forall x, 1 <= x <= 100 -> factorial(x) == x * factorial(x - 1)
 ``` 
 
 `PyBT` will automatically generate inputs based on the type of `factorial`'s arguments, and any hypotheses provided by the user. 
