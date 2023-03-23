@@ -16,13 +16,13 @@ def test_factorial(x: int):
     assert a == x * pred
 
 
-@pybt 
-def test_factorial_coerce(x : str):
+@pybt
+def test_factorial_coerce(x: str):
     test_case = TestCase()
     with test_case.assertRaises(Exception) as context:
         factorial(x)
-    
-    assert(context.exception is not None)
+
+    assert context.exception is not None
 
 
 def rev(l):
@@ -30,10 +30,12 @@ def rev(l):
 
 
 @pybt(hypotheses={"l": lambda l: len(l) <= 10})
-def test_rev(l: list[str | int | bool | list[bool | str | list[str]]]):
+def test_rev(l: list[str | int | bool | list[bool | str | list[str]  | list[dict[str, list[dict[str,str]]]]]]):
     assert rev(rev(l)) == l
 
 
+
 # test_factorial()
-test_factorial_coerce()
-# test_rev()
+# test_factorial_coerce()
+test_rev()
+# test_dict_func()

@@ -4,7 +4,7 @@ from types import UnionType
 from functools import wraps, partial
 
 
-from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list
+from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list, gen_dict
 from pybt.core.util import is_base_type
 
 
@@ -17,7 +17,7 @@ BASIC_TYPE_MAP = {
 
 DATA_STRUCT_TYPE_MAP = {
     # these are really just a list of type generators to use
-    dict: lambda d: gen_list(d),  # something here
+    dict: lambda d: gen_dict(d),  # something here
     list: lambda l: gen_list(l),
 }
 
