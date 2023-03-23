@@ -30,8 +30,11 @@ def gen_list(type_gen_list):
     rot = 0
     for _ in range(random.randint(1, 100)):
         rot %= len(type_gen_list)
-        type_gen = type_gen_list[rot]
-        l.append(type_gen())
+        next = type_gen_list[rot]
+        if type(next) is list: 
+            l.append(next[0]())
+        else:
+            l.append(next())
         rot += 1
     return l
 

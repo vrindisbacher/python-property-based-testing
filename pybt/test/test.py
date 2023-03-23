@@ -20,10 +20,10 @@ def rev(l):
 
 
 @pybt(hypotheses={"l": lambda l: len(l) <= 10})
-def test_rev(l: list[str | int | bool]):
+def test_rev(l: list[str | int | bool | list[bool]]):
     assert rev(rev(l)) == l
 
 
 # test_factorial()
 # test_complex()
-test_rev()
+# test_rev()

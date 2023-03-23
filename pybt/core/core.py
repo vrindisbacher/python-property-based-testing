@@ -47,7 +47,8 @@ def _get_complex_args_helper(arg_type, arg_struct):
         )
 
         if len(sub_type_struct_list) == 1:
-            sub_type_struct_list = sub_type_struct_list[0]
+            if type(sub_type_struct_list[0]) is list:
+                sub_type_struct_list = sub_type_struct_list[0]
 
         if base_type is UnionType:
             # ignore the base type
