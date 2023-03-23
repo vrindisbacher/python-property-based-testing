@@ -1,7 +1,7 @@
 from pybt.core.core import pybt
 
 
-def factorial(x):
+def factorial(x : str):
     fac = 1
     for i in range(1, x + 1):
         fac = fac * i
@@ -15,4 +15,14 @@ def test_factorial(x: int):
     assert a == x * pred
 
 
-test_factorial()
+def rev(l):
+    return l[::-1]
+
+@pybt(hypotheses={"l": lambda l : len(l) <= 10 })
+def test_rev(l : list[str | int | bool]):
+    assert(rev(rev(l)) == l)
+
+
+# test_factorial()
+# test_complex()
+test_rev()
