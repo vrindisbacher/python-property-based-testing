@@ -1,4 +1,5 @@
 from pybt.core.core import pybt
+from unittest import TestCase
 
 
 def factorial(x: str):
@@ -15,15 +16,24 @@ def test_factorial(x: int):
     assert a == x * pred
 
 
+@pybt 
+def test_factorial_coerce(x : str):
+    test_case = TestCase()
+    with test_case.assertRaises(Exception) as context:
+        factorial(x)
+    
+    assert(context.exception is not None)
+
+
 def rev(l):
     return l[::-1]
 
 
 @pybt(hypotheses={"l": lambda l: len(l) <= 10})
-def test_rev(l: list[str | int | bool | list[bool]]):
+def test_rev(l: list[str | int | bool | list[bool | str | list[str]]]):
     assert rev(rev(l)) == l
 
 
 # test_factorial()
-# test_complex()
+test_factorial_coerce()
 # test_rev()
