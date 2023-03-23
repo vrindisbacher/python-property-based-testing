@@ -4,7 +4,7 @@ from types import UnionType
 from functools import wraps, partial
 
 
-from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list 
+from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list
 from pybt.core.util import is_base_type
 
 
@@ -16,9 +16,9 @@ BASIC_TYPE_MAP = {
 }
 
 DATA_STRUCT_TYPE_MAP = {
-    # these are really just a list of type generators to use 
-    dict: lambda d : gen_list(d), # something here
-    list: lambda l : gen_list(l)
+    # these are really just a list of type generators to use
+    dict: lambda d: gen_list(d),  # something here
+    list: lambda l: gen_list(l),
 }
 
 
@@ -34,28 +34,34 @@ def _get_complex_args_helper(arg_type, arg_struct):
     base_type = typing.get_origin(arg_type)
 
     if not base_type:
-        if (b := BASIC_TYPE_MAP.get(arg_type)):
-            return b 
+        if b := BASIC_TYPE_MAP.get(arg_type):
+            return b
         else:
-            raise Exception(f"Type {arg_type} unhandled. Please use a custom generator.")
+            raise Exception(
+                f"Type {arg_type} unhandled. Please use a custom generator."
+            )
     else:
         sub_types = typing.get_args(arg_type)
-        sub_type_struct_list = list(map(lambda x: _get_complex_args_helper(x, []), sub_types))
+        sub_type_struct_list = list(
+            map(lambda x: _get_complex_args_helper(x, []), sub_types)
+        )
 
         if len(sub_type_struct_list) == 1:
             sub_type_struct_list = sub_type_struct_list[0]
 
         if base_type is UnionType:
-            # ignore the base type 
+            # ignore the base type
             return sub_type_struct_list
         else:
             if base_type in DATA_STRUCT_TYPE_MAP:
-                arg_struct.append(partial(DATA_STRUCT_TYPE_MAP[base_type], sub_type_struct_list))
+                arg_struct.append(
+                    partial(DATA_STRUCT_TYPE_MAP[base_type], sub_type_struct_list)
+                )
             else:
                 raise Exception("Not Implemented")
-            
+
             return arg_struct
-  
+
 
 def _get_complex_args(arg_type):
     # generates a list of types for complex types.
@@ -86,7 +92,7 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
         for name in type_hints.keys():
             if hypotheses and (h := hypotheses.get(name)):
                 hypothesis = h
-            
+
             arg = arg_to_generator_map[name]()
             while not hypothesis(arg):
                 arg = arg_to_generator_map[name]()
