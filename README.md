@@ -32,3 +32,21 @@ Here, we test a function called `factorial`, using a "universally quantified pro
 
 
 `PyBT` will automatically generate inputs based on the type of `factorial`'s arguments, and any hypotheses provided by the user. 
+
+## Using PyBT for coercion checking
+
+Here is another test for our `factorial` function. Here, we assert that passing a string to our function 
+throws a type error. This can be useful if you want to make sure that arguments will not be automagically 
+coerced by python and give some non-sensical output. 
+```
+from unittest import TestCase
+
+
+@pybt 
+def test_factorial_coerce(x : str):
+    test_case = TestCase()
+    with test_case.assertRaises(Exception) as context:
+        factorial(x)
+    
+    assert(context.exception is not None)
+```
