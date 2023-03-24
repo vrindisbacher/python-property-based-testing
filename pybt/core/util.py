@@ -43,7 +43,7 @@ def gen_dict(type_gen_list):
     type_gen_list = type_gen_list[1]  # the types are always 1
 
     for _ in range(random.randint(0, 100)):
-        if type(type_gen_list) is list: 
+        if type(type_gen_list) is list:
             next = type_gen_list[random.randint(0, len(type_gen_list) - 1)]
         else:
             next = type_gen_list

@@ -51,7 +51,6 @@ def _get_complex_args_helper(arg_type, arg_struct):
                 sub_type_struct_list = sub_type_struct_list[0]
 
         if base_type is UnionType:
-            # ignore the base type
             return sub_type_struct_list
         else:
             if base_type in DATA_STRUCT_TYPE_MAP:
@@ -65,17 +64,21 @@ def _get_complex_args_helper(arg_type, arg_struct):
 
 
 def _get_complex_args(arg_type):
-    # generates a list of types for complex types.
+    # generates a list of functions handling complex types.
     # for example the following type argument
     # list[int | list[bool]] will generate the
     # following structure
-    # [{list : [int, {list : bool}]}]
+    # function with arg [int, function with arg [bool]]
     return _get_complex_args_helper(arg_type, [])[0]
 
 
 def _set_args(arg_to_generator_map, type_hints, generators):
     for arg_name, arg_type in type_hints.items():
         if is_base_type(arg_type):
+
+            if arg_type == any:
+                raise Exception("Please explicitly type your tests")
+            
             if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
             else:
@@ -101,12 +104,13 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
 
         try:
             f(*args_to_pass)
-        except AssertionError as e:
+        except Exception as e:
             print(f"Failed on iteration {i + 1}\n")
             print("Args passed : ", sep=" ")
             for arg in args_to_pass:
                 print(arg, sep=", ")
             failed = True
+            print("With Exception\n", e)
             break
 
     if not failed:
