@@ -8,17 +8,21 @@ from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list, gen_
 from pybt.core.util import is_base_type
 
 
+MAX_BASE_SIZE = 1000000
+MAX_COMPLEX_SIZE = 100
+
+
 BASIC_TYPE_MAP = {
-    int: gen_int,
-    float: gen_float,
-    str: gen_str,
-    bool: gen_bool,
+    int: lambda s: partial(gen_int, s),
+    float: lambda _: gen_float,
+    str: lambda s: partial(gen_str, s),
+    bool: lambda _: gen_bool,
 }
 
 DATA_STRUCT_TYPE_MAP = {
     # these are really just a list of type generators to use
-    dict: lambda d: gen_dict(d),  # something here
-    list: lambda l: gen_list(l),
+    dict: lambda s, d: partial(gen_dict, s, d),
+    list: lambda s, l: partial(gen_list, s, l),
 }
 
 
@@ -27,15 +31,17 @@ def _validate_args(f, type_hints):
         raise Exception("No type annotations provided")
 
     if not len(type_hints) == f.__code__.co_argcount:
-        raise Exception("You did not provide type hints for all variables")
+        raise Exception("Please provide type hints for all variables")
 
 
-def _get_complex_args_helper(arg_type, arg_struct):
+def _get_complex_args_helper(
+    arg_type, arg_struct, max_basic_arg_size, max_complex_arg_size
+):
     base_type = typing.get_origin(arg_type)
 
     if not base_type:
         if b := BASIC_TYPE_MAP.get(arg_type):
-            return b
+            return b(max_basic_arg_size)
         else:
             raise Exception(
                 f"Type {arg_type} unhandled. Please use a custom generator."
@@ -43,19 +49,25 @@ def _get_complex_args_helper(arg_type, arg_struct):
     else:
         sub_types = typing.get_args(arg_type)
         sub_type_struct_list = list(
-            map(lambda x: _get_complex_args_helper(x, []), sub_types)
+            map(
+                lambda x: _get_complex_args_helper(
+                    x, [], max_basic_arg_size, max_complex_arg_size
+                ),
+                sub_types,
+            )
         )
 
-        if len(sub_type_struct_list) == 1:
-            if type(sub_type_struct_list[0]) is list:
-                sub_type_struct_list = sub_type_struct_list[0]
+        if len(sub_type_struct_list) == 1 and type(sub_type_struct_list[0]) is list:
+            sub_type_struct_list = sub_type_struct_list[0]
 
         if base_type is UnionType:
             return sub_type_struct_list
         else:
             if base_type in DATA_STRUCT_TYPE_MAP:
                 arg_struct.append(
-                    partial(DATA_STRUCT_TYPE_MAP[base_type], sub_type_struct_list)
+                    DATA_STRUCT_TYPE_MAP[base_type](
+                        max_complex_arg_size, sub_type_struct_list
+                    )
                 )
             else:
                 raise Exception("Not Implemented")
@@ -63,28 +75,37 @@ def _get_complex_args_helper(arg_type, arg_struct):
             return arg_struct
 
 
-def _get_complex_args(arg_type):
+def _get_complex_args(arg_type, max_basic_arg_size, max_complex_arg_size):
     # generates a list of functions handling complex types.
     # for example the following type argument
     # list[int | list[bool]] will generate the
     # following structure
     # function with arg [int, function with arg [bool]]
-    return _get_complex_args_helper(arg_type, [])[0]
+    return _get_complex_args_helper(
+        arg_type, [], max_basic_arg_size, max_complex_arg_size
+    )[0]
 
 
-def _set_args(arg_to_generator_map, type_hints, generators):
+def _set_args(
+    arg_to_generator_map,
+    type_hints,
+    generators,
+    max_basic_arg_size,
+    max_complex_arg_size,
+):
     for arg_name, arg_type in type_hints.items():
         if is_base_type(arg_type):
-
             if arg_type == any:
                 raise Exception("Please explicitly type your tests")
-            
+
             if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
             else:
                 arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type]
         else:
-            complex_generator_map = _get_complex_args(arg_type)
+            complex_generator_map = _get_complex_args(
+                arg_type, max_basic_arg_size, max_complex_arg_size
+            )
             arg_to_generator_map[arg_name] = complex_generator_map
 
 
@@ -119,9 +140,11 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
 
 def pybt(
     f=None,
-    n=1000,
+    n: int = 1000,
     generators: dict[str, Callable] = None,
     hypotheses: dict[str, Callable[[any], bool]] = None,
+    max_basic_arg_size: int = MAX_BASE_SIZE,
+    max_complex_arg_size: int = MAX_COMPLEX_SIZE,
 ):
     """
     A decorator to use as entry point for pb-testing all functions
@@ -130,9 +153,18 @@ def pybt(
     parameter n : the number of tests to run
     parameter generators : user provided generators for function arguments (passed as a dictionary)
     paramater hypotheses : hypotheses that the generated args must agree with
+    parameter max_basic_arg_size : maximum arg size for strings, ints, float etc.
+    parameter max_complex_arg_size : maximum size to use for all structures (list, dicts)
     """
     if f is None:
-        return partial(pybt, n=n, generators=generators, hypotheses=hypotheses)
+        return partial(
+            pybt,
+            n=n,
+            generators=generators,
+            hypotheses=hypotheses,
+            max_basic_arg_size=max_basic_arg_size,
+            max_complex_arg_size=max_complex_arg_size,
+        )
 
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -140,7 +172,13 @@ def pybt(
         _validate_args(f, type_hints)
 
         arg_to_generator_map = {}
-        _set_args(arg_to_generator_map, type_hints, generators)
+        _set_args(
+            arg_to_generator_map=arg_to_generator_map,
+            type_hints=type_hints,
+            generators=generators,
+            max_basic_arg_size=max_basic_arg_size,
+            max_complex_arg_size=max_complex_arg_size,
+        )
 
         _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses)
 
