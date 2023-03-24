@@ -10,7 +10,7 @@ def rev(l):
     return l[::-1]
 
 
-@pybt(hypotheses={"l": lambda l: len(l) <= 10})
+@pybt
 def test_rev(l: list[str | int | bool | list[bool | str | list[str]  | list[dict[str, list[dict[str,str]]]]]]):
     assert rev(rev(l)) == l
 ```
