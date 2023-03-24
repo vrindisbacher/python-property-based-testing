@@ -2,7 +2,7 @@
 
 `PyBT` is a library for property based testing in python. Here is an example: 
 
-```
+```python
 from pybt.core.core import pybt
 
 
@@ -28,8 +28,9 @@ test_factorial()
 
 Here, we test a function called `factorial`, using a "universally quantified proposition" which is expressed as a function. 
 
+```Coq
 ∀ x, 1 ≤ x ≤ 100, factorial(x) == x * factorial(x - 1)
-
+```
 
 `PyBT` will automatically generate inputs based on the type of `factorial`'s arguments, and any hypotheses provided by the user. 
 
@@ -38,7 +39,7 @@ Here, we test a function called `factorial`, using a "universally quantified pro
 Here is another test for our `factorial` function. Here, we assert that passing a string to our function 
 throws a type error. This can be useful if you want to make sure that arguments will not be automagically 
 coerced by python and give some non-sensical output. 
-```
+```python
 from unittest import TestCase
 
 
