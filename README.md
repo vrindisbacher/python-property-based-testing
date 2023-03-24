@@ -26,7 +26,7 @@ Here, we test a function called `rev`, using a "universally quantified propositi
 
 ## Using PyBT for coercion checking
 
-Here is another test for our `factorial` function. Here, we assert that passing a string to our function 
+Here is another test for a function named `factorial`. Here, we assert that passing a string to our function 
 throws a type error. This can be useful if you want to make sure that arguments will not be automagically 
 coerced by python and give some non-sensical output. 
 ```python
