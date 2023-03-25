@@ -101,7 +101,7 @@ def _set_args(
             if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
             else:
-                arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type]
+                arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type](max_basic_arg_size)
         else:
             complex_generator_map = _get_complex_args(
                 arg_type, max_basic_arg_size, max_complex_arg_size
