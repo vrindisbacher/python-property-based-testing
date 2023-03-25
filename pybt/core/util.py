@@ -3,31 +3,30 @@ import string
 import typing
 
 
-MAX_INT = 100000
-MIN_INT = -1 * MAX_INT - 1
-
 # generators
 
 
-def gen_int():
-    return random.randrange(0, MAX_INT)
+def gen_int(max_basic_arg_size):
+    return random.randrange(-1 * max_basic_arg_size - 1, max_basic_arg_size)
 
 
 def gen_float():
     return random.random() * gen_int()
 
 
-def gen_str():
-    return "".join(random.choices(string.ascii_letters, k=random.randint(1, 100)))
+def gen_str(max_basic_arg_size):
+    return "".join(
+        random.choices(string.ascii_letters, k=random.randint(1, max_basic_arg_size))
+    )
 
 
 def gen_bool():
     return [True, False][random.randint(0, 1)]
 
 
-def gen_list(type_gen_list):
+def gen_list(max_complex_arg_size, type_gen_list):
     l = []
-    for _ in range(random.randint(0, 100)):
+    for _ in range(random.randint(0, max_complex_arg_size)):
         next = type_gen_list[random.randint(0, len(type_gen_list) - 1)]
         if type(next) is list:
             l.append(next[random.randint(0, len(next) - 1)]())
@@ -36,13 +35,13 @@ def gen_list(type_gen_list):
     return l
 
 
-def gen_dict(type_gen_list):
+def gen_dict(max_complex_arg_size, type_gen_list):
     d = {}
 
     key = type_gen_list[0]  # the key is always 0
     type_gen_list = type_gen_list[1]  # the types are always 1
 
-    for _ in range(random.randint(0, 100)):
+    for _ in range(random.randint(0, max_complex_arg_size)):
         if type(type_gen_list) is list:
             next = type_gen_list[random.randint(0, len(type_gen_list) - 1)]
         else:
@@ -54,7 +53,6 @@ def gen_dict(type_gen_list):
             key_to_use = key()
 
         if type(next) is list:
-            # need to not get the zero'th element
             d[key_to_use] = next[random.randint(0, len(next) - 1)]()
         else:
             d[key_to_use] = next()
