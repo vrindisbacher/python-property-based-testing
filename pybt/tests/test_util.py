@@ -1,5 +1,5 @@
 import random
-from typing import _UnionGenericAlias
+from typing import _UnionGenericAlias, get_origin
 from types import UnionType
 
 
@@ -17,11 +17,13 @@ def _gen_complex_type_helper(prim_type, max_len_and_depth, num_calls):
             next_type = BASE_TYPES[random.randint(0, len(BASE_TYPES) - 1)]
 
         if next_type in COMPLEX_TYPES:
-            list_of_types.append(_gen_complex_type_helper(next_type, max_len_and_depth, num_calls + 1))
+            list_of_types.append(
+                _gen_complex_type_helper(next_type, max_len_and_depth, num_calls + 1)
+            )
         else:
             list_of_types.append(next_type)
-    
-    # some magix to generate union types dynamically 
+
+    # some magix to generate union types dynamically
     sub_types = _UnionGenericAlias(UnionType, tuple(list_of_types))
 
     return prim_type[sub_types]
