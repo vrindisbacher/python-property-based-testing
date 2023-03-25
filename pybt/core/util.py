@@ -64,4 +64,4 @@ def gen_dict(max_complex_arg_size, type_gen_list):
 
 
 def is_base_type(obj):
-    return len(typing.get_args(obj)) == 0
+    return typing.get_origin(obj) is None  

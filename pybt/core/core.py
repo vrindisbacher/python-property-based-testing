@@ -1,4 +1,5 @@
 import typing
+import traceback
 from typing import Callable
 from types import UnionType
 from functools import wraps, partial
@@ -101,7 +102,9 @@ def _set_args(
             if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
             else:
-                arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type]
+                arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type](
+                    max_basic_arg_size
+                )
         else:
             complex_generator_map = _get_complex_args(
                 arg_type, max_basic_arg_size, max_complex_arg_size
@@ -131,7 +134,7 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
             for arg in args_to_pass:
                 print(arg, sep=", ")
             failed = True
-            print("With Exception\n", e)
+            print("With Exception\n", traceback.format_exc())
             break
 
     if not failed:
