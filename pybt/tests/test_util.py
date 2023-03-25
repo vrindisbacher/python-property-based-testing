@@ -1,5 +1,5 @@
 import random
-from typing import _UnionGenericAlias, get_origin
+from typing import _UnionGenericAlias
 from types import UnionType
 
 
