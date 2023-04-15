@@ -5,7 +5,15 @@ from types import UnionType
 from functools import wraps, partial
 
 
-from pybt.core.util import gen_int, gen_float, gen_str, gen_bool, gen_list, gen_dict
+from pybt.core.util import (
+    gen_int,
+    gen_float,
+    gen_str,
+    gen_bool,
+    gen_list,
+    gen_dict,
+    gen_any,
+)
 from pybt.core.util import is_base_type
 
 
@@ -44,9 +52,10 @@ def _get_complex_args_helper(
         if b := BASIC_TYPE_MAP.get(arg_type):
             return b(max_basic_arg_size)
         else:
-            raise Exception(
-                f"Type {arg_type} unhandled. Please use a custom generator."
-            )
+            # NOTE : will need to be careful here because of generic classes passed
+            # complex type without any subtypes
+            return [gen_any(max_complex_arg_size)]
+
     else:
         sub_types = typing.get_args(arg_type)
         sub_type_struct_list = list(
@@ -95,10 +104,7 @@ def _set_args(
     max_complex_arg_size,
 ):
     for arg_name, arg_type in type_hints.items():
-        if is_base_type(arg_type):
-            if arg_type == any:
-                raise Exception("Please explicitly type your tests")
-
+        if is_base_type(arg_type) and not arg_type == any:
             if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
             else:
