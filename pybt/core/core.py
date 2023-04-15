@@ -1,6 +1,6 @@
 import typing
 import traceback
-from typing import Callable
+from typing import Callable, Any
 from types import UnionType
 from functools import wraps, partial
 
@@ -13,6 +13,7 @@ from pybt.core.util import (
     gen_list,
     gen_dict,
     gen_any,
+    get_base_type
 )
 from pybt.core.util import is_base_type
 
@@ -23,7 +24,7 @@ MAX_COMPLEX_SIZE = 100
 
 BASIC_TYPE_MAP = {
     int: lambda s: partial(gen_int, s),
-    float: lambda _: gen_float,
+    float: lambda s: partial(gen_float, s),
     str: lambda s: partial(gen_str, s),
     bool: lambda _: gen_bool,
 }
@@ -49,6 +50,12 @@ def _get_complex_args_helper(
     base_type = typing.get_origin(arg_type)
     sub_types = typing.get_args(arg_type)
 
+    if arg_type == any or arg_type == Any:
+        sub_types = [gen_any(max_complex_arg_size)]
+        base_type = typing.get_origin(sub_types[0])
+        if not base_type:
+            arg_type = sub_types[0]
+
     if not base_type:
         if b := BASIC_TYPE_MAP.get(arg_type):
             return b(max_basic_arg_size)
@@ -56,7 +63,10 @@ def _get_complex_args_helper(
             # NOTE : will need to be careful here because of generic classes passed
             # complex type without any subtypes
             base_type = arg_type
-            sub_types = [gen_any(max_complex_arg_size)]
+            if base_type == dict:
+                sub_types = [get_base_type(), gen_any(max_complex_arg_size)]
+            else:
+                sub_types = [gen_any(max_complex_arg_size)]
 
     sub_type_struct_list = list(
         map(

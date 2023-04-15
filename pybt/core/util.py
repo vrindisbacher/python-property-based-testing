@@ -18,8 +18,8 @@ def gen_int(max_basic_arg_size):
     return random.randrange(-1 * max_basic_arg_size - 1, max_basic_arg_size)
 
 
-def gen_float():
-    return random.random() * gen_int()
+def gen_float(max_basic_arg_size):
+    return random.random() * gen_int(max_basic_arg_size)
 
 
 def gen_str(max_basic_arg_size):
@@ -60,6 +60,11 @@ def gen_dict(max_complex_arg_size, type_gen_list):
         else:
             key_to_use = key()
 
+        if type(key_to_use) in [list, dict]:
+            raise Exception(
+                "Mutable types cannot be dictionary keys. Please fix your type annotations"
+            )
+
         if type(next) is list:
             d[key_to_use] = next[random.randint(0, len(next) - 1)]()
         else:
@@ -94,6 +99,10 @@ def gen_any(max_depth):
     if base in COMPLEX_TYPES:
         return _gen_complex_type_helper(base, max_depth, 0)
     return base
+
+
+def get_base_type():
+    return BASE_TYPES[random.randint(0, len(BASE_TYPES) - 1)]
 
 
 # other utilities
