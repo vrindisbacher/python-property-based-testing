@@ -11,7 +11,7 @@ def rev(l):
 
 
 @pybt
-def test_rev(l: list[str | int | bool | list[bool | str | list[str]  | list[dict[str, list[dict[str,str]]]]]]):
+def test_rev(l: list):
     assert rev(rev(l)) == l
 ```
 
