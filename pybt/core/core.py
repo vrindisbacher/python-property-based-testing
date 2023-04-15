@@ -51,11 +51,13 @@ def _get_complex_args_helper(
     sub_types = typing.get_args(arg_type)
 
     if base_type == dict and sub_types:
-        if sub_types[0] in [any, Any]:
+        if sub_types[0] not in BASIC_TYPE_MAP:
             sub_types_copy = list(sub_types)
-            sub_types_copy[0] = get_base_type()
+            if len(sub_types) > 1:
+                sub_types_copy[0] = get_base_type()
+            else:
+                sub_types_copy = [get_base_type()] + sub_types_copy
             sub_types = tuple(sub_types_copy)
-
 
     if arg_type in [any, Any]:
         sub_types = [gen_any(max_complex_arg_size)]

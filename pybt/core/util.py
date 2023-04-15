@@ -47,13 +47,12 @@ def gen_dict(max_complex_arg_size, type_gen_list):
     d = {}
 
     key = type_gen_list[0]  # the key is always 0
-    type_gen_list = type_gen_list[1]  # the types are always 1
-
+    sub_gen = type_gen_list[1]  # the types are always 1
     for _ in range(random.randint(0, max_complex_arg_size)):
-        if type(type_gen_list) is list:
-            next = type_gen_list[random.randint(0, len(type_gen_list) - 1)]
+        if type(sub_gen) is list:
+            next = sub_gen[random.randint(0, len(sub_gen) - 1)]
         else:
-            next = type_gen_list
+            next = sub_gen
 
         if type(key) is list:
             key_to_use = key[random.randint(0, len(key) - 1)]()
