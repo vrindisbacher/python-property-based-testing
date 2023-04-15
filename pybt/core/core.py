@@ -13,7 +13,7 @@ from pybt.core.util import (
     gen_list,
     gen_dict,
     gen_any,
-    get_base_type
+    get_base_type,
 )
 from pybt.core.util import is_base_type
 
@@ -50,7 +50,14 @@ def _get_complex_args_helper(
     base_type = typing.get_origin(arg_type)
     sub_types = typing.get_args(arg_type)
 
-    if arg_type == any or arg_type == Any:
+    if base_type == dict and sub_types:
+        if sub_types[0] in [any, Any]:
+            sub_types_copy = list(sub_types)
+            sub_types_copy[0] = get_base_type()
+            sub_types = tuple(sub_types_copy)
+
+
+    if arg_type in [any, Any]:
         sub_types = [gen_any(max_complex_arg_size)]
         base_type = typing.get_origin(sub_types[0])
         if not base_type:
