@@ -9,22 +9,18 @@ def rev(l):
 class TestRevSimple(TestCase):
     pybt_small = pybt(max_complex_arg_size=5, max_basic_arg_size=1000)
 
-    @staticmethod
     @pybt_small
-    def rev_test(l: list):
+    def rev_test(self, l: list):
         assert rev(rev(l)) == l
 
-    @staticmethod
     @pybt_small
-    def rev_test_types(l: list[any]):
+    def rev_test_types(self, l: list[any]):
         assert rev(rev(l)) == l
 
-    @staticmethod
     @pybt_small
-    def rev_test_wrong(l: list[dict[any, any]]):
+    def rev_test_wrong(self, l: list[dict[any, any]]):
         assert rev(rev(l)) == l
 
-    @staticmethod
     @pybt_small
-    def rev_rest_no_pipe(l: list[dict[any]]):
+    def rev_rest_no_pipe(self, l: list[dict[any]]):
         assert rev(rev(l)) == l

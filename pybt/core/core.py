@@ -125,7 +125,7 @@ def _set_args(
     max_complex_arg_size,
 ):
     for arg_name, arg_type in type_hints.items():
-        if is_base_type(arg_type) or (gen := generators.get(arg_name)):
+        if is_base_type(arg_type) or (generators and (gen := generators.get(arg_name))):
             if gen:
                 arg_to_generator_map[arg_name] = gen
             else:
@@ -155,7 +155,7 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_=None)
 
         try:
             if self_:
-                f(self_,*args_to_pass)
+                f(self_, *args_to_pass)
             else:
                 f(*args_to_pass)
         except Exception as e:
@@ -201,11 +201,9 @@ def pybt(
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        
-        self_ref = None 
-        if (len(args) > 0):
+        self_ref = None
+        if len(args) > 0:
             self_ref = args[0]
-            
 
         type_hints = typing.get_type_hints(f)
         _validate_args(f, type_hints)
@@ -220,7 +218,5 @@ def pybt(
         )
 
         _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_ref)
-
-        return f
 
     return wrapper
