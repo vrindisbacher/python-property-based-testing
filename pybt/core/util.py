@@ -45,7 +45,6 @@ def gen_list(max_complex_arg_size, type_gen_list):
 
 def gen_dict(max_complex_arg_size, type_gen_list):
     d = {}
-
     key = type_gen_list[0]  # the key is always 0
     sub_gen = type_gen_list[1]  # the types are always 1
     for _ in range(random.randint(0, max_complex_arg_size)):
@@ -90,14 +89,21 @@ def _gen_complex_type_helper(prim_type, max_len_and_depth, num_calls):
     # some magic to generate union types dynamically
     sub_types = _UnionGenericAlias(UnionType, tuple(list_of_types))
 
+    if prim_type == dict:
+        key_types = BASE_TYPES[random.randint(0, len(BASE_TYPES) - 1)]
+        return prim_type[key_types, sub_types]
+
     return prim_type[sub_types]
 
 
-def gen_any(max_depth):
-    base = ALL_TYPES[random.randint(0, len(ALL_TYPES) - 1)]
-    if base in COMPLEX_TYPES:
-        return _gen_complex_type_helper(base, max_depth, 0)
-    return base
+def gen_any(max_depth, base_type=None):
+    if not base_type:
+        base_type = ALL_TYPES[random.randint(0, len(ALL_TYPES) - 1)]
+
+    if base_type in COMPLEX_TYPES:
+        return _gen_complex_type_helper(base_type, max_depth, 0)
+
+    return base_type
 
 
 def get_base_type():

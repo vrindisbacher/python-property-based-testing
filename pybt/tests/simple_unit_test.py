@@ -1,4 +1,5 @@
 from unittest import TestCase
+import unittest
 from pybt.core.core import pybt
 
 
@@ -9,17 +10,17 @@ class TestRevSimple(TestCase):
         return l[::-1]
 
     @pybt_small
-    def rev_test(self, l: list):
+    def test_rev(self, l: list):
         assert self.rev(self.rev(l)) == l
 
     @pybt_small
-    def rev_test_types(self, l: list[any]):
+    def test_rev_any(self, l: list[any]):
         assert self.rev(self.rev(l)) == l
 
     @pybt_small
-    def rev_test_wrong(self, l: list[dict[any, any]]):
+    def test_rev_dict(self, l: list[dict]):
         assert self.rev(self.rev(l)) == l
 
     @pybt_small
-    def rev_rest_no_pipe(self, l: list[dict[any]]):
+    def test_rev_dict_no_key(self, l: list[dict[str, any]]):
         assert self.rev(self.rev(l)) == l

@@ -54,30 +54,29 @@ def _get_complex_args_helper(
 
     if base_type == dict and sub_types:
         if sub_types[0] not in BASIC_TYPE_MAP:
-            sub_types_copy = list(sub_types)
-            if len(sub_types) > 1:
-                sub_types_copy[0] = get_base_type()
-            else:
-                sub_types_copy = [get_base_type()] + sub_types_copy
-            sub_types = tuple(sub_types_copy)
-
-    if arg_type in [any, Any]:
-        sub_types = [gen_any(max_complex_arg_size)]
-        base_type = typing.get_origin(sub_types[0])
-        if not base_type:
-            arg_type = sub_types[0]
+            raise Exception(
+                """
+                Your dict is not well typed. Please provide an immutable type for key.\n
+                If you provided dict[any,any], just use dict. Otherwise, explicitly type the 
+                key. 
+                """
+            )
 
     if not base_type:
         if b := BASIC_TYPE_MAP.get(arg_type):
             return b(max_basic_arg_size)
         else:
-            # NOTE : will need to be careful here because of generic classes passed
-            # complex type without any subtypes
-            base_type = arg_type
-            if base_type == dict:
-                sub_types = [get_base_type(), gen_any(max_complex_arg_size)]
+            if arg_type in [any, Any]:
+                complex_type = gen_any(max_complex_arg_size)
             else:
-                sub_types = [gen_any(max_complex_arg_size)]
+                complex_type = gen_any(max_complex_arg_size, arg_type)
+
+            base_type = typing.get_origin(complex_type)
+            sub_types = typing.get_args(complex_type)
+            if not base_type and (b := BASIC_TYPE_MAP.get(complex_type)):
+                return b(max_basic_arg_size)
+            elif not base_type:
+                raise Exception(f"type {arg_type} Not Implemented")
 
     sub_type_struct_list = list(
         map(
@@ -101,7 +100,7 @@ def _get_complex_args_helper(
                 )
             )
         else:
-            raise Exception("Not Implemented")
+            raise Exception(f"{base_type} Is Not Implemented")
 
         return arg_struct
 
