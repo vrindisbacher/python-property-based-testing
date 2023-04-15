@@ -40,7 +40,9 @@ def _validate_args(f, type_hints):
     if not len(type_hints):
         raise Exception("No type annotations provided")
 
-    if not len(type_hints) == f.__code__.co_argcount:
+    all_vars = set(f.__code__.co_varnames).difference(set(["self", "f"]))
+
+    if not len(type_hints) == len(all_vars):
         raise Exception("Please provide type hints for all variables")
 
 
@@ -123,8 +125,8 @@ def _set_args(
     max_complex_arg_size,
 ):
     for arg_name, arg_type in type_hints.items():
-        if is_base_type(arg_type) and not arg_type == any:
-            if generators and (gen := generators.get(arg_name)):
+        if is_base_type(arg_type) or (gen := generators.get(arg_name)):
+            if gen:
                 arg_to_generator_map[arg_name] = gen
             else:
                 arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type](
@@ -137,7 +139,7 @@ def _set_args(
             arg_to_generator_map[arg_name] = complex_generator_map
 
 
-def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
+def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_=None):
     for i in range(n):
         args_to_pass = []
         hypothesis = lambda x: True
@@ -152,7 +154,10 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses):
             args_to_pass.append(arg)
 
         try:
-            f(*args_to_pass)
+            if self_:
+                f(self_,*args_to_pass)
+            else:
+                f(*args_to_pass)
         except Exception as e:
             print(f"Failed on iteration {i + 1}\n")
             print("Args passed : ", sep=" ")
@@ -196,6 +201,12 @@ def pybt(
 
     @wraps(f)
     def wrapper(*args, **kwargs):
+        
+        self_ref = None 
+        if (len(args) > 0):
+            self_ref = args[0]
+            
+
         type_hints = typing.get_type_hints(f)
         _validate_args(f, type_hints)
 
@@ -208,7 +219,7 @@ def pybt(
             max_complex_arg_size=max_complex_arg_size,
         )
 
-        _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses)
+        _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_ref)
 
         return f
 
