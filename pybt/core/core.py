@@ -47,6 +47,7 @@ def _get_complex_args_helper(
     arg_type, arg_struct, max_basic_arg_size, max_complex_arg_size
 ):
     base_type = typing.get_origin(arg_type)
+    sub_types = typing.get_args(arg_type)
 
     if not base_type:
         if b := BASIC_TYPE_MAP.get(arg_type):
@@ -54,35 +55,34 @@ def _get_complex_args_helper(
         else:
             # NOTE : will need to be careful here because of generic classes passed
             # complex type without any subtypes
-            return [gen_any(max_complex_arg_size)]
+            base_type = arg_type
+            sub_types = [gen_any(max_complex_arg_size)]
 
-    else:
-        sub_types = typing.get_args(arg_type)
-        sub_type_struct_list = list(
-            map(
-                lambda x: _get_complex_args_helper(
-                    x, [], max_basic_arg_size, max_complex_arg_size
-                ),
-                sub_types,
-            )
+    sub_type_struct_list = list(
+        map(
+            lambda x: _get_complex_args_helper(
+                x, [], max_basic_arg_size, max_complex_arg_size
+            ),
+            sub_types,
         )
+    )
 
-        if len(sub_type_struct_list) == 1 and type(sub_type_struct_list[0]) is list:
-            sub_type_struct_list = sub_type_struct_list[0]
+    if len(sub_type_struct_list) == 1 and type(sub_type_struct_list[0]) is list:
+        sub_type_struct_list = sub_type_struct_list[0]
 
-        if base_type is UnionType:
-            return sub_type_struct_list
-        else:
-            if base_type in DATA_STRUCT_TYPE_MAP:
-                arg_struct.append(
-                    DATA_STRUCT_TYPE_MAP[base_type](
-                        max_complex_arg_size, sub_type_struct_list
-                    )
+    if base_type is UnionType:
+        return sub_type_struct_list
+    else:
+        if base_type in DATA_STRUCT_TYPE_MAP:
+            arg_struct.append(
+                DATA_STRUCT_TYPE_MAP[base_type](
+                    max_complex_arg_size, sub_type_struct_list
                 )
-            else:
-                raise Exception("Not Implemented")
+            )
+        else:
+            raise Exception("Not Implemented")
 
-            return arg_struct
+        return arg_struct
 
 
 def _get_complex_args(arg_type, max_basic_arg_size, max_complex_arg_size):
