@@ -2,7 +2,7 @@ from functools import partial
 import typing
 
 from pybt.core.core import DATA_STRUCT_TYPE_MAP, BASIC_TYPE_MAP, _get_complex_args, pybt
-from pybt.tests.test_util import gen_complex_type, is_base_type
+from pybt.tests.test_util import gen_complex_type
 
 
 MAX_TYPE_LEN = 5
@@ -12,7 +12,7 @@ max_basic_type_size = 1
 max_complex_type_size = 1
 
 generators = {"t": lambda: gen_complex_type(MAX_TYPE_LEN)}
-type_pybt = partial(pybt, generators=generators, n=10000)
+type_pybt = pybt(generators=generators, n=10000)
 
 
 def find_func_for_type(t):
