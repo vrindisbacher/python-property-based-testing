@@ -52,6 +52,7 @@ def _get_complex_args_helper(
         if b := BASIC_TYPE_MAP.get(arg_type):
             return b(max_basic_arg_size)
         else:
+            # NOTE : will need to be careful here because of generic classes passed
             # complex type without any subtypes
             return [gen_any(max_complex_arg_size)]
 
