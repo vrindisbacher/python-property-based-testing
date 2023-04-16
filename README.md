@@ -78,7 +78,7 @@ Running this again, we see that both the generated lists and their types are dif
 
 As we can see, our second run generated much more complex lists than our first. Both the scale and complexity of the arguments generated give us strong guarantees that the property we enforced for our function `rev` holds. 
 
-## Advanced uses 
+## Advanced Use 
 
 ### Hypotheses 
 
