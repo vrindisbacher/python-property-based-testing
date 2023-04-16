@@ -1,5 +1,4 @@
 from unittest import TestCase
-import unittest
 from pybt.core.core import pybt
 
 
