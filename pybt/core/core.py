@@ -12,9 +12,8 @@ from pybt.core.util import (
     gen_list,
     gen_dict,
     gen_any,
-    get_base_type,
+    is_base_type,
 )
-from pybt.core.util import is_base_type
 
 
 MAX_BASE_SIZE = 1000000
@@ -29,7 +28,6 @@ BASIC_TYPE_MAP = {
 }
 
 DATA_STRUCT_TYPE_MAP = {
-    # these are really just a list of type generators to use
     dict: lambda s, d: partial(gen_dict, s, d),
     list: lambda s, l: partial(gen_list, s, l),
 }
@@ -183,7 +181,7 @@ def pybt(
     parameter f : the function that the decorator sits on and the function that defines the test spec
     parameter n : the number of tests to run
     parameter generators : user provided generators for function arguments (passed as a dictionary)
-    paramater hypotheses : hypotheses that the generated args must agree with
+    parameter hypotheses : hypotheses that the generated args must agree with
     parameter max_basic_arg_size : maximum arg size for strings, ints, float etc.
     parameter max_complex_arg_size : maximum size to use for all structures (list, dicts)
     """
