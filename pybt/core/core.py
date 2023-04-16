@@ -4,7 +4,6 @@ from typing import Callable, Any
 from types import UnionType
 from functools import wraps, partial
 
-
 from pybt.core.util import (
     gen_int,
     gen_float,
