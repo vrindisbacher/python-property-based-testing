@@ -1,5 +1,11 @@
 ## PyBT
 
+## Installation 
+
+```python
+pip install python-property-based-testing 
+```
+
 ## Introduction 
 
 `PyBT` is a library for property based testing in python. The main idea, is to state and randomly test properties about functions at large scale. The main functionality `PyBT` provides is a decorator named `pybt`. 
