@@ -187,9 +187,9 @@ def pybt(
     
     if n <= 0:
         raise Exception("You should run more than 0 iterations! Please set n > 0.")
-    if type(generators) != dict:
+    if generators and type(generators) != dict:
         raise Exception("Invalid generators! Please try again with a dict of argument name to function") 
-    if type(hypotheses) != dict:
+    if hypotheses type(hypotheses) != dict:
         raise Exception("Invalid hypotheses! Please try again with a dict of argument name to function that returns a boolean") 
     if max_basic_arg_size <= 0:
         raise Exception("Please set a max basic arg size greater than 0") 
