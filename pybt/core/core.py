@@ -35,8 +35,7 @@ DATA_STRUCT_TYPE_MAP = {
 
 def _validate_args(f, type_hints):
     all_vars = set(f.__code__.co_varnames).difference(set(["self", "f"]))
-
-    if not len(type_hints) == len(all_vars):
+    if not set(type_hints.keys()).difference(all_vars) == set():
         raise Exception("Please provide type hints for all variables")
 
 
@@ -118,14 +117,17 @@ def _set_args(
     max_complex_arg_size,
 ):
     for arg_name, arg_type in type_hints.items():
-        if is_base_type(arg_type) or (generators and (gen := generators.get(arg_name))):
-            if gen:
+        found = False
+        if is_base_type(arg_type) or generators:
+            if gen := generators.get(arg_name):
                 arg_to_generator_map[arg_name] = gen
-            else:
+                found = True
+            elif is_base_type(arg_type):
                 arg_to_generator_map[arg_name] = BASIC_TYPE_MAP[arg_type](
                     max_basic_arg_size
                 )
-        else:
+                found = True
+        elif not found:
             complex_generator_map = _get_complex_args(
                 arg_type, max_basic_arg_size, max_complex_arg_size
             )
