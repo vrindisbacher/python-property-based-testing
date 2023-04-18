@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-property-based-testing"
-version = "0.3.0"
+version = "0.4.0"
 description = "Property Based Testing in Python"
 authors = ["vrindisbacher <vrindisbacher77@gmail.com>"]
 readme = "README.md"
