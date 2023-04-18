@@ -34,9 +34,6 @@ DATA_STRUCT_TYPE_MAP = {
 
 
 def _validate_args(f, type_hints):
-    if not len(type_hints):
-        raise Exception("No type annotations provided")
-
     all_vars = set(f.__code__.co_varnames).difference(set(["self", "f"]))
 
     if not len(type_hints) == len(all_vars):
