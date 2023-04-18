@@ -184,6 +184,18 @@ def pybt(
     parameter max_basic_arg_size : maximum arg size for strings, ints, float etc.
     parameter max_complex_arg_size : maximum size to use for all structures (list, dicts)
     """
+    
+    if n <= 0:
+        raise Exception("You should run more than 0 iterations! Please set n > 0.")
+    if type(generators) != dict:
+        raise Exception("Invalid generators! Please try again with a dict of argument name to function") 
+    if type(hypotheses) != dict:
+        raise Exception("Invalid hypotheses! Please try again with a dict of argument name to function that returns a boolean") 
+    if max_basic_arg_size <= 0:
+        raise Exception("Please set a max basic arg size greater than 0") 
+    if max_complex_arg_size <= 0:
+        raise Exception("Please set a max complex arg size greater than 0") 
+    
     if f is None:
         return partial(
             pybt,
@@ -193,7 +205,7 @@ def pybt(
             max_basic_arg_size=max_basic_arg_size,
             max_complex_arg_size=max_complex_arg_size,
         )
-
+    
     @wraps(f)
     def wrapper(*args, **kwargs):
         self_ref = None
@@ -201,6 +213,9 @@ def pybt(
             self_ref = args[0]
 
         type_hints = typing.get_type_hints(f)
+        if 'return' in type_hints:
+            del type_hints['return']
+                     
         _validate_args(f, type_hints)
 
         arg_to_generator_map = {}
