@@ -1,0 +1,23 @@
+name: Run Unit Tests
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+    - name: Run Tests
+      run: |
+        python3 -m unittest discover -v -s ./pybt/tests -p "*_test.py"
