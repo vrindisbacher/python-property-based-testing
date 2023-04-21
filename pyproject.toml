@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-property-based-testing"
-version = "0.9.1"
+version = "0.9.2"
 description = "Property Based Testing in Python"
 authors = ["vrindisbacher <vrindisbacher77@gmail.com>"]
 readme = "README.md"
@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<=3.11"
+python = ">=3.10,<=3.12"
 
 
 [tool.poetry.group.dev.dependencies]
