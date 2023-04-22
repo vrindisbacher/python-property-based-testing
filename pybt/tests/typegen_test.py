@@ -151,6 +151,23 @@ class TestTypeGen(TestCase):
                     assert type(el_) == int
 
     @pybt
+    def test_handles_callable_with_nested_union_dict(
+        self,
+        f: Callable[[int, int], dict[int, int | str | dict[int, int]] | int | str],
+        x: int,
+        y: int,
+    ):
+        ret = f(x, y)
+        assert type(ret) == dict
+        for key, val in ret.items():
+            assert type(key) == int
+            assert type(val) in [int, str, dict]
+            if type(val) == dict:
+                for k, v in val.items():
+                    assert type(k) == int
+                    assert type(v) == int
+
+    @pybt
     def test_handles_callable_with_list(self, f: Callable[..., list], x: int, y: int):
         assert type(f(x, y)) == list
 
