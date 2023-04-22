@@ -174,6 +174,20 @@ def gen_any(max_depth, base_type=None):
     return base_type
 
 
+def gen_callable(ret_gen):
+    """
+    Generates a random return value of proper type for a function
+
+    parameter max_complex_arg_size : the max size for complex datatypes
+    parameter ret_gen : the function (generator) for the callable to return
+
+    returns : a return type in accordance with ret_gen
+    """
+    if type(ret_gen[0]) == list:
+        return lambda *x: ret_gen[0][0]()
+    return lambda *x: ret_gen[0]()
+
+
 def get_base_type() -> int | str | bool | float:
     """
     Generates a base type.

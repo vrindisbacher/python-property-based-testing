@@ -1,3 +1,5 @@
+from typing import Callable
+
 from unittest import TestCase
 from pybt.core import pybt
 
@@ -114,3 +116,56 @@ class TestTypeGen(TestCase):
                 for key, val in el.items():
                     assert type(key) == int
                     assert val is None
+
+    @pybt
+    def test_handles_callable_with_explicit_args(
+        self, f: Callable[[int, int], bool], x: int, y: int
+    ):
+        assert type(f(x, y)) == bool
+
+    @pybt
+    def test_handles_callable_with_implicit_args(
+        self, f: Callable[..., bool], x: int, y: int
+    ):
+        assert type(f(x, y)) == bool
+
+    @pybt
+    def test_handles_callable_with_union(
+        self, f: Callable[[int, int], list | int | str], x: int, y: int
+    ):
+        assert type(f(x, y)) in [list, int, str]
+
+    @pybt
+    def test_handles_callable_with_nested_union(
+        self,
+        f: Callable[[int, int], list[int | str | list[int]] | int | str],
+        x: int,
+        y: int,
+    ):
+        ret = f(x, y)
+        assert type(ret) == list
+        for el in ret:
+            assert type(el) in [int, str, list]
+            if type(el) == list:
+                for el_ in el:
+                    assert type(el_) == int
+
+    @pybt
+    def test_handles_callable_with_list(self, f: Callable[..., list], x: int, y: int):
+        assert type(f(x, y)) == list
+
+    @pybt
+    def test_handles_callable_with_dict(self, f: Callable[..., dict], x: int, y: int):
+        assert type(f(x, y)) == dict
+
+    @pybt
+    def test_handles_callable_with_any_and_lower_case_callable(
+        self, f: callable, x: int, y: int
+    ):
+        f(x, y)
+
+    @pybt
+    def test_handles_callable_with_any_and_upper_case_callable(
+        self, f: Callable, x: int, y: int
+    ):
+        f(x, y)
