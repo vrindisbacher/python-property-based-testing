@@ -2,7 +2,7 @@ import traceback
 import typing
 from functools import partial
 from types import UnionType
-from typing import Any
+from typing import Any, Callable
 
 from pybt.core.exception import (
     MistypedDict,
@@ -185,7 +185,7 @@ def _drive_tests(
     f: callable,
     type_hints: dict[str, type],
     n: int,
-    hypotheses: dict[str, callable[any, bool]],
+    hypotheses: dict[str, Callable[..., bool]],
     self_=None,
 ) -> None:
     """
