@@ -21,8 +21,8 @@ from pybt.core.util import (
     is_base_type,
 )
 
-MAX_BASE_SIZE = 1000000
-MAX_COMPLEX_SIZE = 10
+MAX_BASE_SIZE = 10000
+MAX_COMPLEX_SIZE = 5
 
 
 BASIC_TYPE_MAP = {
