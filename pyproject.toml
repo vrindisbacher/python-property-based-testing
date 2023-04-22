@@ -24,4 +24,4 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 120
 ignore = ["E731"]
-path = "./pybt/core"
+exclude = ["./pybt/tests"]
