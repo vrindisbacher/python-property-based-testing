@@ -75,3 +75,44 @@ class TestTypeGen(TestCase):
                 assert type(v) == list
                 for el in v:
                     assert type(el) == int
+
+    @pybt
+    def test_handles_none(self, p: int | None):
+        assert p is None or type(p) == int
+
+    @pybt
+    def test_handles_none_in_complex_list(self, l: list[None]):
+        assert type(l) == list
+        for el in l:
+            assert el is None
+
+    @pybt
+    def test_handles_none_in_complex_dict(self, d: dict[None, None]):
+        assert type(d) == dict
+        for key, val in d.items():
+            assert key is None
+            assert val is None
+
+    @pybt
+    def test_handles_none_in_unioned_complex_dict(
+        self, d: dict[str | int, None | list[None] | int]
+    ):
+        assert type(d) == dict
+        for key, val in d.items():
+            assert type(key) in [str, int]
+            assert val is None or type(val) in [list, int]
+            if type(val) == list:
+                for el in val:
+                    assert el is None
+
+    @pybt
+    def test_handles_none_in_unioned_complex_list(
+        self, l: list[str | None | dict[int, None]]
+    ):
+        assert type(l) == list
+        for el in l:
+            assert el is None or type(el) in [str, dict]
+            if type(el) == dict:
+                for key, val in el.items():
+                    assert type(key) == int
+                    assert val is None

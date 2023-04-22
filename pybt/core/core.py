@@ -2,7 +2,7 @@ import traceback
 import typing
 import inspect
 from functools import partial
-from types import UnionType
+from types import UnionType, NoneType
 from typing import Any, Callable
 
 from pybt.core.exception import (
@@ -30,6 +30,8 @@ BASIC_TYPE_MAP = {
     float: lambda size: partial(gen_float, size),
     str: lambda size: partial(gen_str, size),
     bool: lambda _: gen_bool,
+    None : lambda _ : lambda : None,
+    NoneType : lambda _ : lambda : None 
 }
 
 DATA_STRUCT_TYPE_MAP = {

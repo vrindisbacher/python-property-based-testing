@@ -45,7 +45,7 @@ class ParamTestCase(TestCase):
 
     @pybt
     def test_keyword_args(self, i: int, keyword=None):
-        assert keyword == None
+        assert keyword is None
         assert type(i) == int
 
     def test_raises_signature_error(self):
@@ -78,6 +78,7 @@ class ParamTestCase(TestCase):
     def test_ignores_body_types(self, i: int):
         x: int = i
         assert type(i) == int
+        assert type(x) == int
 
     @pybt
     def test_ignores_return_types(self, i: int) -> str:
@@ -85,10 +86,11 @@ class ParamTestCase(TestCase):
 
     @pybt
     def test_ignores_typed_keywords(self, keyword: str | None = None):
-        assert keyword == None
+        assert keyword is None
 
     @pybt
     def test_ignores_all_unneeded_types(self, i: int, keyword: str = None) -> None:
         x: int = i
+        assert type(x) == int
         assert type(i) == int
-        assert keyword == None
+        assert keyword is None

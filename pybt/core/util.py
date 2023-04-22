@@ -8,7 +8,7 @@ from types import UnionType
 from pybt.core.exception import MutableTypeAsDict
 
 
-BASE_TYPES = [int, float, str, bool]
+BASE_TYPES = [int, float, str, bool, None]
 COMPLEX_TYPES = [list, dict]
 ALL_TYPES = BASE_TYPES + COMPLEX_TYPES
 
