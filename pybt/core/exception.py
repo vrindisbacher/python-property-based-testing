@@ -11,8 +11,12 @@ class MistypedDict(Exception):
 
 
 class NotImplemented(Exception):
-    pass 
+    pass
 
 
 class PyBTTestFail(Exception):
-    pass 
+    pass
+
+
+class MutableTypeAsDict(Exception):
+    pass

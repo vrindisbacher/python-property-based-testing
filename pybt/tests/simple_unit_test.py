@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pybt.core.core import pybt
+from pybt.core import pybt
 
 
 class TestRevSimple(TestCase):
