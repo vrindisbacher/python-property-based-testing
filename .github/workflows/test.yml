@@ -2,7 +2,7 @@ name: Run Unit Tests
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, reopened, synchronize]
 
 permissions:
   contents: read
