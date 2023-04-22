@@ -4,6 +4,7 @@ import inspect
 from functools import partial
 from types import UnionType, NoneType
 from typing import Any, Callable
+from collections.abc import Callable as CollectionsCallable
 
 from pybt.core.exception import (
     MistypedDict,
@@ -18,6 +19,7 @@ from pybt.core.util import (
     gen_int,
     gen_list,
     gen_str,
+    gen_callable,
     is_base_type,
 )
 
@@ -30,13 +32,16 @@ BASIC_TYPE_MAP = {
     float: lambda size: partial(gen_float, size),
     str: lambda size: partial(gen_str, size),
     bool: lambda _: gen_bool,
-    None : lambda _ : lambda : None,
-    NoneType : lambda _ : lambda : None 
+    None: lambda _: lambda: None,
+    NoneType: lambda _: lambda: None,
 }
 
 DATA_STRUCT_TYPE_MAP = {
     dict: lambda size, dict_type_gen: partial(gen_dict, size, dict_type_gen),
     list: lambda size, list_type_gen: partial(gen_list, size, list_type_gen),
+    CollectionsCallable: lambda _, ret_type_gen: partial(gen_callable, ret_type_gen),
+    Callable: lambda _, ret_type_gen: partial(gen_callable, ret_type_gen),
+    callable: lambda _, ret_type_gen: partial(gen_callable, ret_type_gen),
 }
 
 
@@ -91,6 +96,19 @@ def _get_complex_args_helper(
     """
     base_type = typing.get_origin(arg_type)
     sub_types = typing.get_args(arg_type)
+
+    if base_type == CollectionsCallable or arg_type == Callable or arg_type == callable:
+        if len(sub_types):
+            sub_types = [sub_types[1]]
+        else:
+            base_type = CollectionsCallable
+            any_type = gen_any(max_complex_arg_size)
+            orig = typing.get_origin(any_type)
+            args = typing.get_args(any_type)
+            if not (orig or args):
+                sub_types = [any_type]
+            else:
+                sub_types = args
 
     if base_type == dict and sub_types:
         if sub_types[0] not in BASIC_TYPE_MAP and type(sub_types[0]) is not UnionType:
