@@ -1,6 +1,6 @@
 from unittest import TestCase
 from pybt.core import pybt
-from pybt.core.exception import InvalidArgs, MistypedSignature
+from pybt.core.exception import InvalidArgs, MistypedSignature, MistypedDict
 
 
 class ParamTestCase(TestCase):
@@ -94,3 +94,33 @@ class ParamTestCase(TestCase):
         assert type(x) == int
         assert type(i) == int
         assert keyword is None
+
+    def test_mistyped_dict_on_mutable_dict(self):
+        try:
+
+            @pybt
+            def _test(d: dict[dict, dict]):
+                pass
+
+            _test()
+
+            self.fail(
+                "This is a mistyped dict so it should throw a mistyped dict error"
+            )
+        except MistypedDict:
+            pass
+
+    def test_mistyped_dict_on_mutable_list(self):
+        try:
+
+            @pybt
+            def _test(d: dict[list, dict]):
+                pass
+
+            _test()
+
+            self.fail(
+                "This is a mistyped dict so it should throw a mistyped dict error"
+            )
+        except MistypedDict:
+            pass
