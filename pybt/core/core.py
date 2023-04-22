@@ -3,6 +3,13 @@ import traceback
 from typing import Callable, Any
 from types import UnionType
 from functools import wraps, partial
+from pybt.core.exception import (
+    InvalidArgs,
+    MistypedSignature,
+    NotImplemented,
+    MistypedDict,
+    PyBTTestFail,
+)
 
 from pybt.core.util import (
     gen_int,
@@ -34,9 +41,9 @@ DATA_STRUCT_TYPE_MAP = {
 
 
 def _validate_args(f, type_hints):
-    all_vars = set(f.__code__.co_varnames).difference(set(["self", "f"]))
+    all_vars = set(f.__code__.co_varnames).difference(set(["self"]))
     if not set(type_hints.keys()).difference(all_vars) == set():
-        raise Exception("Please provide type hints for all variables")
+        raise MistypedSignature("Please provide type hints for all variables")
 
 
 def _get_complex_args_helper(
@@ -46,8 +53,8 @@ def _get_complex_args_helper(
     sub_types = typing.get_args(arg_type)
 
     if base_type == dict and sub_types:
-        if sub_types[0] not in BASIC_TYPE_MAP:
-            raise Exception(
+        if sub_types[0] not in BASIC_TYPE_MAP and type(sub_types[0]) is not UnionType:
+            raise MistypedDict(
                 """
                 Your dict is not well typed. Please provide an immutable type for key.\n
                 If you provided dict[any,any], just use dict. Otherwise, explicitly type the 
@@ -69,7 +76,7 @@ def _get_complex_args_helper(
             if not base_type and (b := BASIC_TYPE_MAP.get(complex_type)):
                 return b(max_basic_arg_size)
             elif not base_type:
-                raise Exception(f"type {arg_type} Not Implemented")
+                raise NotImplemented(f"type {arg_type} Not Implemented")
 
     sub_type_struct_list = list(
         map(
@@ -93,7 +100,7 @@ def _get_complex_args_helper(
                 )
             )
         else:
-            raise Exception(f"{base_type} Is Not Implemented")
+            raise NotImplemented(f"{base_type} Is Not Implemented")
 
         return arg_struct
 
@@ -119,7 +126,7 @@ def _set_args(
     for arg_name, arg_type in type_hints.items():
         found = False
         if is_base_type(arg_type) or generators:
-            if gen := generators.get(arg_name):
+            if generators and (gen := generators.get(arg_name)):
                 arg_to_generator_map[arg_name] = gen
                 found = True
             elif is_base_type(arg_type):
@@ -138,7 +145,6 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_=None)
     for i in range(n):
         args_to_pass = []
         hypothesis = lambda x: True
-        failed = False
         for name in type_hints.keys():
             if hypotheses and (h := hypotheses.get(name)):
                 hypothesis = h
@@ -154,16 +160,18 @@ def _drive_tests(arg_to_generator_map, f, type_hints, n, hypotheses, self_=None)
             else:
                 f(*args_to_pass)
         except Exception as e:
-            print(f"Failed on iteration {i + 1}\n")
-            print("Args passed : ", sep=" ")
-            for arg in args_to_pass:
-                print(arg, sep=", ")
-            failed = True
-            print("With Exception\n", traceback.format_exc())
-            break
+            raise PyBTTestFail(
+                f"""
+                Failed on iteration {i + 1}\n 
+                
+                Args Passed : {",".join([str(x) for x in args_to_pass])}\n 
 
-    if not failed:
-        print(f"+++ {n} tests passed +++")
+                Exception: \n\n\n 
+                {traceback.format_exc()}
+                """
+            )
+
+    print(f"+++ {n} tests passed +++")
 
 
 def pybt(
@@ -186,19 +194,19 @@ def pybt(
     """
 
     if n <= 0:
-        raise Exception("You should run more than 0 iterations! Please set n > 0.")
+        raise InvalidArgs("You should run more than 0 iterations! Please set n > 0.")
     if generators and type(generators) != dict:
-        raise Exception(
+        raise InvalidArgs(
             "Invalid generators! Please try again with a dict of argument name to function"
         )
     if hypotheses and type(hypotheses) != dict:
-        raise Exception(
+        raise InvalidArgs(
             "Invalid hypotheses! Please try again with a dict of argument name to function that returns a boolean"
         )
     if max_basic_arg_size <= 0:
-        raise Exception("Please set a max basic arg size greater than 0")
+        raise InvalidArgs("Please set a max basic arg size greater than 0")
     if max_complex_arg_size <= 0:
-        raise Exception("Please set a max complex arg size greater than 0")
+        raise InvalidArgs("Please set a max complex arg size greater than 0")
 
     if f is None:
         return partial(
