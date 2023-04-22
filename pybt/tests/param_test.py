@@ -1,6 +1,7 @@
 from unittest import TestCase
 from pybt.core import pybt
-from pybt.core.exception import InvalidArgs
+from pybt.core.exception import InvalidArgs, MistypedSignature
+
 
 class ParamTestCase(TestCase):
     @pybt
@@ -31,13 +32,63 @@ class ParamTestCase(TestCase):
         assert i <= 100
 
     def test_invalid_args(self):
-        try: 
+        try:
             pybt(n=0)
             pybt(generators=[])
             pybt(hypotheses=1)
             pybt(max_basic_arg_size=-50)
             pybt(max_complex_arg_size=0)
 
-            raise Exception("These Should Not Pass!")
+            self.fail("Invalid args to pybt. This should fail.")
         except InvalidArgs:
-            pass 
+            pass
+
+    @pybt
+    def test_keyword_args(self, i: int, keyword=None):
+        assert keyword == None
+        assert type(i) == int
+
+    def test_raises_signature_error(self):
+        try:
+
+            @pybt
+            def _test(i, keyword):
+                pass
+
+            _test()
+            self.fail("No type annotations provided, this should fail")
+
+        except MistypedSignature:
+            pass
+
+    def test_raises_signature_error2(self):
+        try:
+
+            @pybt
+            def _test(i: int, keyword):
+                pass
+
+            _test()
+            self.fail("No type annotations provided, this should fail")
+
+        except MistypedSignature:
+            pass
+
+    @pybt
+    def test_ignores_body_types(self, i: int):
+        x: int = i
+        assert type(i) == int
+
+    @pybt
+    def test_ignores_return_types(self, i: int) -> str:
+        pass
+
+    @pybt
+    def test_ignores_typed_keywords(self, keyword: str | None = None):
+        assert keyword == None
+
+    @pybt
+    def test_ignores_all_unneeded_types(self, i: int, keyword: str = None) -> None:
+        x: int = i
+        assert type(i) == int
+        assert keyword == None

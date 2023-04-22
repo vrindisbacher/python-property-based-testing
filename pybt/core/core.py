@@ -1,5 +1,6 @@
 import traceback
 import typing
+import inspect
 from functools import partial
 from types import UnionType
 from typing import Any, Callable
@@ -37,18 +38,37 @@ DATA_STRUCT_TYPE_MAP = {
 }
 
 
-def _validate_args(f: callable, type_hints: dict[str, type]) -> bool:
+def _validate_and_return_args(f: callable) -> dict[str, type]:
     """
     Validates that the function passed has complete type annotations
+    and returns the args to generate.
 
     parameter f : the function to run tests on
-    parameter type_hints : the type hints provided by the user (from typing.get_type_hints)
 
-    returns : a boolean indicating whether the function has complete type annotations
+    returns : A dict of str to types representing the args that need to be generated
     """
-    all_vars = set(f.__code__.co_varnames).difference(set(["self"]))
-    if not set(type_hints.keys()).difference(all_vars) == set():
-        raise MistypedSignature("Please provide type hints for all variables")
+    type_hints = {}
+    signature = inspect.signature(f)
+    params = signature.parameters
+    for key, val in params.items():
+        # ignore if the key is self
+        if key == "self":
+            continue
+
+        annot = val.annotation
+        default_arg = val.default
+        if annot == inspect._empty and default_arg == inspect._empty:
+            raise MistypedSignature(
+                f"""
+                Variable {key} is not annotated, and is not a keyword argument or self. 
+                Please type all non-keyword arguments.
+                """
+            )
+
+        if default_arg == inspect._empty:
+            type_hints[key] = annot
+
+    return type_hints
 
 
 def _get_complex_args_helper(

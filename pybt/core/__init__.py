@@ -1,11 +1,11 @@
-from typing import Callable, get_type_hints
+from typing import Callable
 from functools import wraps, partial
 
 from pybt.core.core import MAX_BASE_SIZE, MAX_COMPLEX_SIZE
 
 from pybt.core.exception import InvalidArgs
 
-from pybt.core.core import _validate_args, _set_args, _drive_tests
+from pybt.core.core import _validate_and_return_args, _set_args, _drive_tests
 
 
 def pybt(
@@ -61,11 +61,7 @@ def pybt(
         if len(args) > 0:
             self_ref = args[0]
 
-        type_hints = get_type_hints(f)
-        if "return" in type_hints:
-            del type_hints["return"]
-
-        _validate_args(f, type_hints)
+        type_hints = _validate_and_return_args(f)
 
         arg_to_generator_map = {}
         _set_args(
