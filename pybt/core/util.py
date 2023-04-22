@@ -2,9 +2,10 @@ import random
 import string
 import typing
 
-import random
 from typing import _UnionGenericAlias
 from types import UnionType
+
+from pybt.core.exception import MutableTypeAsDict
 
 
 BASE_TYPES = [int, float, str, bool]
@@ -33,14 +34,14 @@ def gen_bool():
 
 
 def gen_list(max_complex_arg_size, type_gen_list):
-    l = []
+    built_list = []
     for _ in range(random.randint(0, max_complex_arg_size)):
         next = type_gen_list[random.randint(0, len(type_gen_list) - 1)]
         if type(next) is list:
-            l.append(next[random.randint(0, len(next) - 1)]())
+            built_list.append(next[random.randint(0, len(next) - 1)]())
         else:
-            l.append(next())
-    return l
+            built_list.append(next())
+    return built_list
 
 
 def gen_dict(max_complex_arg_size, type_gen_list):
@@ -59,8 +60,11 @@ def gen_dict(max_complex_arg_size, type_gen_list):
             key_to_use = key()
 
         if type(key_to_use) in [list, dict]:
-            raise Exception(
-                "Mutable types cannot be dictionary keys. Please fix your type annotations"
+            raise MutableTypeAsDict(
+                """
+                Mutable types cannot be dictionary keys. 
+                Please fix your type annotations.
+                """
             )
 
         if type(next) is list:

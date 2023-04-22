@@ -10,6 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<=3.12"
+ruff = "^0.0.262"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -18,3 +19,8 @@ black = "^23.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+line-length = 120
+ignore = ["E731"]

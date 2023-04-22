@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pybt.core.core import pybt
+from pybt.core import pybt
 from pybt.core.exception import InvalidArgs
 
 class ParamTestCase(TestCase):

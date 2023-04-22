@@ -37,7 +37,7 @@ There are plans to add random generation of classes and callables in the future.
 
 ```python
 from unittest import TestCase
-from pybt.core.core import pybt
+from pybt.core import pybt
 
 
 def rev(l):
