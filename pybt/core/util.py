@@ -2,7 +2,6 @@ import random
 import string
 import typing
 
-from typing import _UnionGenericAlias
 from types import UnionType
 
 from pybt.core.exception import MutableTypeAsDict
@@ -145,7 +144,7 @@ def _gen_complex_type_helper(prim_type, max_len_and_depth, num_calls):
             list_of_types.append(next_type)
 
     # some magic to generate union types dynamically
-    sub_types = _UnionGenericAlias(UnionType, tuple(list_of_types))
+    sub_types = typing._UnionGenericAlias(UnionType, tuple(list_of_types))
 
     if prim_type == dict:
         key_types = BASE_TYPES[random.randint(0, len(BASE_TYPES) - 1)]
