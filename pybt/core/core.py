@@ -2,7 +2,7 @@ import traceback
 import inspect
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
-from pybt.typing.core import BaseType, GenericAlias
+from pybt.typing.core import BaseType
 
 
 def _validate_and_return_args(f: callable) -> dict[str, type]:
