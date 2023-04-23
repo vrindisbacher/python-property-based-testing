@@ -14,6 +14,8 @@ TODO: Ensure that types passed are pybt types
 
 
 def _get_next(choices):
+    if not choices: 
+        return NoneType
     if len(choices) > 1:
         return choices[random.randint(0, len(choices) - 1)]
     else:
