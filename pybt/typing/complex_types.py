@@ -3,11 +3,13 @@ import typing as PythonTyping
 from types import UnionType
 
 from pybt.typing.basic_types import Int, Str, Bool, Float
-from pybt.typing.core import BaseType, GenericAlias, _type_check, _flat_union
+from pybt.typing.core import BaseType, GenericAlias, _flat_union
 
 
 """ 
 This file implements any, list, tuple, and dict types for PyBT 
+
+TODO: Ensure that types passed are pybt types 
 """
 
 
@@ -59,25 +61,15 @@ class Any(BaseType):
 
         if len(parameters) > 2:
             raise TypeError("Expected 2 arguments: Any[max_depth, max_length]")
-
-        if len(parameters) == 2:
-            _type_check(
-                parameters,
-                (
-                    int,
-                    int,
-                ),
-                "Expected 2 ints: Any[max_depth, max_length]",
-            )
+        if len(parameters):
             cls.max_depth = parameters[0]
+        if len(parameters) > 1:
             cls.max_len = parameters[1]
 
-        if len(parameters) == 1:
-            _type_check(parameters, (int,), "Expected an int: Any[max_depth]")
-            cls.max_depth = parameters[0]
-
-        if cls.max_len < 0:
-            raise TypeError(f"Max Length of {cls.max_len} is less than 0")
+        if cls.max_len <= 0:
+            raise TypeError(f"Max Length of {cls.max_len} is less than or equal to 0")
+        if cls.max_depth <= 0:
+            raise TypeError(f"Max Depth of {cls.max_depth} is less than or equal to 0")
 
         if not cls.sub_type:
             cls.sub_type = Any
@@ -91,8 +83,8 @@ class Any(BaseType):
 
 
 class List(BaseType):
-    max_len: int = 100
-    sub_type: type = None
+    max_len: int = 20
+    sub_type: type = Any
 
     def __init__(self):
         super().__init__()
@@ -109,7 +101,6 @@ class List(BaseType):
             else:
                 return sub_type_choices[0]
 
-        # act according to the subtypes
         list_gen = []
         for _ in range(random.randint(0, self.max_len)):
             t = _get_next()
@@ -125,27 +116,13 @@ class List(BaseType):
 
         if len(parameters) > 2:
             raise TypeError("Expected 2 arguments: List[sub_type, max_length]")
-
-        if len(parameters) == 2:
-            _type_check(
-                parameters,
-                (
-                    type,
-                    int,
-                ),
-                "Expected types and 1 int: List[sub_type, max_length]",
-            )
+        if len(parameters):
             cls.sub_type = parameters[0]
+        if len(parameters) > 1:
             cls.max_len = parameters[1]
 
-        if len(parameters) == 1:
-            # _type_check(
-            #     parameters, (type,), "Expected PyBT type: List[sub_type]"
-            # )
-            cls.sub_type = parameters[0]
-
-        if cls.max_len < 0:
-            raise TypeError(f"Max Length of {cls.max_len} is less than 0")
+        if cls.max_len <= 0:
+            raise TypeError(f"Max Length of {cls.max_len} is less than or equal to 0")
 
         if not cls.sub_type:
             cls.sub_type = Any
@@ -157,14 +134,15 @@ class List(BaseType):
 
 
 class Tuple(List):
-    max_len: int = 100
-    sub_type: type = None
+    max_len: int = 20
+    sub_type: type = Any
 
     def __init__(self):
         super(self).__init__()
 
     def generate(self) -> list:
-        return tuple(self.generate(self))
+        list_type = List[self.sub_type, self.max_len]
+        return tuple(list_type.generate(list_type))
 
     def __str__(self):
         return "pybt.types.Tuple"
@@ -173,34 +151,56 @@ class Tuple(List):
 class Dict(BaseType):
     key_type: BaseType | GenericAlias = Any
     arg_type: BaseType | GenericAlias = Any
+    max_keys: int = 20
 
     def __init__(self):
         super().__init__()
 
     def generate(self) -> dict:
-        ...
+        if not self.key_type:
+            key_type_choices = [Int, Float, Bool, Str]
+        else:
+            key_type_choices = _flat_union(self.key_type)
+
+        if not self.arg_type:
+            arg_type_choices = [Any]
+        else:
+            arg_type_choices = _flat_union(self.arg_type)
+
+        def _get_next(choices):
+            if len(choices) > 1:
+                return choices[random.randint(0, len(choices) - 1)]
+            else:
+                return choices[0]
+
+        dict_gen = {}
+        for _ in range(random.randint(0, self.max_keys)):
+            key = _get_next(key_type_choices)
+            arg = _get_next(arg_type_choices)
+            dict_gen[key.generate(key)] = arg.generate(arg)
+        return dict_gen
 
     def __str__(self):
         return "pybt.types.Dict"
 
     def __class_getitem__(cls, parameters):
+        if len(parameters) > 3:
+            raise TypeError(
+                "Expected 3 arguments: Dict[key_type, arg_type, max_length]"
+            )
+
+        if len(parameters):
+            cls.key_type = parameters[0]
+        if len(parameters) > 1:
+            cls.arg_type = parameters[1]
         if len(parameters) > 2:
-            raise TypeError("Expected 2 arguments: Dict[key_type, arg_type]")
+            cls.max_keys = parameters[2]
 
-        if len(parameters) == 2:
-            # _type_check(
-            #     parameters,
-            #     (type, type),
-            #     "Expected type and type: Dict[key_type, arg_type]",
-            # )
-            cls.sub_type = parameters[0]
-            cls.max_len = parameters[1]
-
-        if len(parameters) == 1:
-            # _type_check(parameters, (BaseType,), "Expected PyBT type: Dict[sub_type]")
-            cls.sub_type = parameters[0]
+        if cls.max_keys <= 0:
+            raise TypeError(f"Max # of Keys of {cls.max_keys} is less than or equal 0")
 
         ga = GenericAlias(cls, parameters, cls.generate)
         ga.key_type = cls.key_type
         ga.arg_type = cls.arg_type
+        ga.max_keys = cls.max_keys
         return ga

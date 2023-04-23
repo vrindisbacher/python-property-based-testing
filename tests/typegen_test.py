@@ -47,7 +47,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_dict_simple_union(
-        self, d: dict[Int | Float | Str | Bool, Int | Float | Str | Bool]
+        self, d: Dict[Int | Float | Str | Bool, Int | Float | Str | Bool]
     ):
         valid = [int, float, str, bool]
         assert type(d) == dict
