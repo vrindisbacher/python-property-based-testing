@@ -24,7 +24,7 @@ class TestStr(TestCase):
     def test_string_type(self):
         try:
 
-            def _test(h: Int["hello"]):  # noqa: F821
+            def _test(h: Int["hello"]):
                 print(h)
 
             _test()
