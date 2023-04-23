@@ -4,7 +4,7 @@ from pybt.typing.basic_types import Int
 from pybt.core import pybt
 
 
-class TestStr(TestCase):
+class TestInt(TestCase):
     @pybt
     def test_no_args(self, i: Int):
         assert i <= 1000 and i >= -1000
