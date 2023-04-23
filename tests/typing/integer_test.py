@@ -6,30 +6,28 @@ from pybt.core import pybt
 
 class TestStr(TestCase):
     @pybt
-    def test_no_args(self):
-        i = Int
-        gen = i.generate(i)
-        assert gen <= 1000 and gen >= -1000
-        assert type(gen) == int
+    def test_no_args(self, i: Int):
+        assert i <= 1000 and i >= -1000
+        assert type(i) == int
 
     @pybt
-    def test_min_arg_only(self):
-        i = Int[0]
-        gen = i.generate(i)
-        assert gen <= 1000 and gen >= 0
-        assert type(gen) == int
+    def test_min_arg_only(self, i: Int[0]):
+        assert i <= 1000 and i >= 0
+        assert type(i) == int
 
     @pybt
-    def test_min_and_max_arg(self):
-        i = Int[0, 10]
-        gen = i.generate(i)
-        assert gen <= 10 and gen >= 0
-        assert type(gen) == int
+    def test_min_and_max_arg(self, i: Int[0, 10]):
+        assert i <= 10 and i >= 0
+        assert type(i) == int
 
     @pybt
     def test_string_type(self):
         try:
-            _ = Int["hello"]
+
+            def _test(h: Int["hello"]):
+                print(h)
+
+            _test()
             self.fail("String are not a valid int. This should fail.")
         except TypeError:
             pass
