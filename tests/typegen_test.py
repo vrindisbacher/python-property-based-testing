@@ -15,7 +15,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_simple_dict(self, d: Dict):
-        assert type(d) == Dict
+        assert type(d) == dict
 
     @pybt
     def test_simple_int(self, i: Int):
