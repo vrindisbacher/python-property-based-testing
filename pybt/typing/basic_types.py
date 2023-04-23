@@ -4,8 +4,19 @@ import random
 import string
 
 """ 
-This file defines pybt types for int, str, bool, and float
+This file defines pybt types for none, int, str, bool, and float
 """
+
+
+class NoneType(BaseType):
+    def __init__(self):
+        super().__init__()
+
+    def generate(self) -> int:
+        return None
+
+    def __str__(self):
+        return "pybt.types.Int"
 
 
 class Int(BaseType):
