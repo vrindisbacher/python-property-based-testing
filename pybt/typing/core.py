@@ -3,7 +3,6 @@ import typing as PythonTyping
 
 def _type_check(args, types, msg):
     for idx, el in enumerate(args):
-        print(type(el), el)
         if type(el) != types[idx]:
             raise TypeError(msg)
 
@@ -15,6 +14,7 @@ def _flat_union(t: type) -> list:
         return [t]
     else:
         return sub_type
+
 
 
 class GenericAlias:

@@ -2,15 +2,58 @@ import random
 import typing as PythonTyping
 from types import UnionType
 
-from pybt.typing.basic_types import Int, Str, Bool, Float
+from pybt.typing.basic_types import Int, Str, Bool, Float, NoneType
 from pybt.typing.core import BaseType, GenericAlias, _flat_union
 
 
 """ 
-This file implements any, list, tuple, and dict types for PyBT 
+This file implements union, any, list, tuple, and dict types for PyBT 
 
 TODO: Ensure that types passed are pybt types 
 """
+
+
+def _get_next(choices):
+    if len(choices) > 1:
+        return choices[random.randint(0, len(choices) - 1)]
+    else:
+        return choices[0]
+
+
+class Union(BaseType):
+    sub_type: UnionType = None
+
+    def __init__(self):
+        super().__init__()
+
+    def generate(self) -> any:
+        if not self.sub_type:
+            sub_type_choices = [Any]
+        else:
+            sub_type_choices = _flat_union(self.sub_type)
+
+        if len(sub_type_choices) > 1:
+            choice = sub_type_choices[random.randint(0, len(sub_type_choices) - 1)]
+        else:
+            choice = sub_type_choices[0]
+
+        return choice.generate(choice)
+
+    def __str__(self):
+        return "pybt.types.Union"
+
+    def __class_getitem__(cls, parameters):
+        if type(parameters) != tuple:
+            parameters = (parameters,)
+
+        if len(parameters) > 1:
+            raise TypeError("Expected 2 arguments: Any[max_depth, max_length]")
+        if len(parameters):
+            cls.sub_type = parameters[0]
+
+        ga = GenericAlias(cls, parameters, cls.generate)
+        ga.sub_type = cls.sub_type
+        return ga
 
 
 class Any(BaseType):
@@ -21,8 +64,8 @@ class Any(BaseType):
         super().__init__()
 
     def create_any(self, base_type, times_called):
-        _ALL_TYPES: list = [List, Tuple, Int, Str, Bool, Float]
-        _BASE_TYPES: list = [Int, Str, Bool, Float]
+        _ALL_TYPES: list = [List, Tuple, Int, Str, Bool, Float, NoneType]
+        _BASE_TYPES: list = [Int, Str, Bool, Float, NoneType]
         types = []
         for _ in range(self.max_len):
             next = _ALL_TYPES[random.randint(0, len(_ALL_TYPES) - 1)]
@@ -41,8 +84,8 @@ class Any(BaseType):
         return base_type[sub_types]
 
     def generate(self, base_type=None) -> list:
-        _ALL_TYPES: list = [List, Int, Str, Bool, Float]
-        _BASE_TYPES: list = [Int, Str, Bool, Float]
+        _ALL_TYPES: list = [List, Tuple, Int, Str, Bool, Float, NoneType]
+        _BASE_TYPES: list = [Int, Str, Bool, Float, NoneType]
         if not base_type:
             base_type = _ALL_TYPES[random.randint(0, len(_ALL_TYPES) - 1)]
 
@@ -71,20 +114,15 @@ class Any(BaseType):
         if cls.max_depth <= 0:
             raise TypeError(f"Max Depth of {cls.max_depth} is less than or equal to 0")
 
-        if not cls.sub_type:
-            cls.sub_type = Any
-
         ga = GenericAlias(cls, parameters, cls.generate)
         ga.max_depth = cls.max_depth
         ga.max_len = cls.max_len
-        ga._ALL_TYPES = cls._ALL_TYPES
-        ga._BASE_TYPES = cls._BASE_TYPES
         return ga
 
 
 class List(BaseType):
     max_len: int = 20
-    sub_type: type = Any
+    sub_type: type = None
 
     def __init__(self):
         super().__init__()
@@ -95,15 +133,9 @@ class List(BaseType):
         else:
             sub_type_choices = _flat_union(self.sub_type)
 
-        def _get_next():
-            if len(sub_type_choices) > 1:
-                return sub_type_choices[random.randint(0, len(sub_type_choices) - 1)]
-            else:
-                return sub_type_choices[0]
-
         list_gen = []
         for _ in range(random.randint(0, self.max_len)):
-            t = _get_next()
+            t = _get_next(sub_type_choices)
             list_gen.append(t.generate(t))
         return list_gen
 
@@ -124,9 +156,6 @@ class List(BaseType):
         if cls.max_len <= 0:
             raise TypeError(f"Max Length of {cls.max_len} is less than or equal to 0")
 
-        if not cls.sub_type:
-            cls.sub_type = Any
-
         ga = GenericAlias(cls, parameters, cls.generate)
         ga.sub_type = cls.sub_type
         ga.max_len = cls.max_len
@@ -135,7 +164,7 @@ class List(BaseType):
 
 class Tuple(List):
     max_len: int = 20
-    sub_type: type = Any
+    sub_type: type = None
 
     def __init__(self):
         super(self).__init__()
@@ -149,8 +178,8 @@ class Tuple(List):
 
 
 class Dict(BaseType):
-    key_type: BaseType | GenericAlias = Any
-    arg_type: BaseType | GenericAlias = Any
+    key_type: BaseType | GenericAlias = None
+    arg_type: BaseType | GenericAlias = None
     max_keys: int = 20
 
     def __init__(self):
@@ -166,12 +195,6 @@ class Dict(BaseType):
             arg_type_choices = [Any]
         else:
             arg_type_choices = _flat_union(self.arg_type)
-
-        def _get_next(choices):
-            if len(choices) > 1:
-                return choices[random.randint(0, len(choices) - 1)]
-            else:
-                return choices[0]
 
         dict_gen = {}
         for _ in range(random.randint(0, self.max_keys)):

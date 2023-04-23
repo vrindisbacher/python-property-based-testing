@@ -1,8 +1,11 @@
 import traceback
 import inspect
+import types
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
-from pybt.typing.core import BaseType
+from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Union
+from pybt.typing.core import GenericAlias
 
 
 def _validate_and_return_args(f: callable) -> dict[str, type]:
@@ -14,6 +17,7 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
 
     returns : A dict of str to types representing the args that need to be generated
     """
+    _PYBT_TYPES = [NoneType, Int, Str, Bool, Float, List, Tuple, Dict, Any]
     type_hints = {}
     signature = inspect.signature(f)
     params = signature.parameters
@@ -31,6 +35,20 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
                 Please type all non-keyword arguments.
                 """
             )
+        elif default_arg != inspect._empty:
+            continue
+
+        # alias UnionType to PyBT UnionType
+        if isinstance(annot, types.UnionType):
+            annot = Union[annot]
+
+        if not (annot in _PYBT_TYPES or isinstance(annot, GenericAlias)):
+            raise MistypedSignature(
+                f"""
+                Variable {key} has annotation {annot} which is not a PyBT type. 
+                Please use a PyBT type. 
+                """
+            )
 
         if default_arg == inspect._empty:
             type_hints[key] = annot
@@ -40,7 +58,7 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
 
 def _drive_tests(
     f: callable,
-    type_hints: dict[str, BaseType],
+    type_hints: dict[str, any],
     n: int,
     hypotheses: dict[str, any],
     self_=None,
