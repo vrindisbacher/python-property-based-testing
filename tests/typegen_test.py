@@ -13,9 +13,9 @@ class TestTypeGen(TestCase):
     def test_simple_tuple(self, t: Tuple):
         assert type(t) == tuple
 
-        @pybt
-        def test_simple_dict(self, d: Dict):
-            assert type(d) == Dict
+    @pybt
+    def test_simple_dict(self, d: Dict):
+        assert type(d) == Dict
 
     @pybt
     def test_simple_int(self, i: Int):
@@ -80,9 +80,8 @@ class TestTypeGen(TestCase):
                 for el in v:
                     assert type(el) == int
 
-
     @pybt
-    def test_handles_none(self, p: int | NoneType):
+    def test_handles_none(self, p: Int | NoneType):
         assert p is None or type(p) == int
 
     @pybt
@@ -92,7 +91,7 @@ class TestTypeGen(TestCase):
             assert el is None
 
     @pybt
-    def test_handles_none_in_complex_dict(self, d: dict[NoneType, NoneType]):
+    def test_handles_none_in_complex_dict(self, d: Dict[NoneType, NoneType]):
         assert type(d) == dict
         for key, val in d.items():
             assert key is None
@@ -100,7 +99,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_handles_none_in_unioned_complex_dict(
-        self, d: dict[str | int, NoneType | list[NoneType] | int]
+        self, d: Dict[Str | Int, NoneType | Int]
     ):
         assert type(d) == dict
         for key, val in d.items():
@@ -112,7 +111,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_handles_none_in_unioned_complex_list(
-        self, l: list[str | NoneType | dict[int, NoneType]]
+        self, l: List[Str | NoneType | Dict[Int, NoneType]]
     ):
         assert type(l) == list
         for el in l:
@@ -121,6 +120,7 @@ class TestTypeGen(TestCase):
                 for key, val in el.items():
                     assert type(key) == int
                     assert val is None
+
 
 #     @pybt
 #     def test_handles_callable_with_explicit_args(
