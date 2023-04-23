@@ -12,12 +12,12 @@ class Any(BaseType):
 
 class List(BaseType):
     max_len: int = 100
-    sub_types = []
+    sub_types: list[type] = None
 
     def __init__(self):
         super().__init__()
 
-    def generate(self) -> int:
+    def generate(self) -> list:
         def _get_next():
             return random.randint(self.sub_types[0, len(self.sub_types) - 1])
 
@@ -78,7 +78,7 @@ class Dict(BaseType):
     def __init__(self):
         super().__init__()
 
-    def generate(self) -> int:
+    def generate(self) -> dict:
         def _get_next():
             return random.randint(self.sub_types[0, len(self.sub_types) - 1])
 
@@ -89,7 +89,6 @@ class Dict(BaseType):
                 self.max_len = self.parameters[1]
 
         if not self.sub_types:
-            # use Any instead
             self.sub_types = [Any]
 
         # act according to the subtypes
@@ -119,7 +118,7 @@ class Dict(BaseType):
             _type_check(parameters, (BaseType), "Expected PyBT type: List[sub_types]")
             cls.sub_types = parameters[0]
 
-        if cls.max_len < 0:
-            raise TypeError(f"Max Length of {cls.max_len} is less than 0")
+        if cls.max_len <= 0:
+            raise TypeError(f"Max Length of {cls.max_len} is less than or equal 0")
 
         return GenericAlias(cls, parameters, cls.generate)

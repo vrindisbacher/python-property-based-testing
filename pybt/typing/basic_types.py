@@ -58,7 +58,7 @@ class Float(BaseType):
     def __init__(self):
         super().__init__()
 
-    def generate(self) -> int:
+    def generate(self) -> float:
         if isinstance(self, GenericAlias):
             self.min = -1000
             self.max = 1000
@@ -100,7 +100,7 @@ class Str(BaseType):
     def __init__(self):
         super().__init__()
 
-    def generate(self) -> int:
+    def generate(self) -> str:
         if isinstance(self, GenericAlias):
             self.max_len = 100
             if len(self.parameters):
@@ -124,8 +124,8 @@ class Str(BaseType):
             _type_check(parameters, (int,), "Expected 1 int: Str[max_length]")
             cls.max_len = parameters[0]
 
-        if cls.max_len < 0:
-            raise TypeError(f"Max Length of {cls.max_len} is less than 0")
+        if cls.max_len <= 0:
+            raise TypeError(f"Max Length of {cls.max_len} is less than or equal 0")
 
         return GenericAlias(cls, parameters, cls.generate)
 
@@ -134,7 +134,7 @@ class Bool(BaseType):
     def __init__(self):
         super().__init__()
 
-    def generate(self) -> int:
+    def generate(self) -> bool:
         return [True, False][random.randint(0, 1)]
 
     def __str__(self):
