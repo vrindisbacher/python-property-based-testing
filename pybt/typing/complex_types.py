@@ -16,6 +16,8 @@ _DEFAULT_MAX_DEPTH = 2
 _DEFAULT_MAX_LEN = 10
 _DEFAULT_SUB_TYPE = None
 
+T = PythonTyping.TypeVar("T")
+
 
 def _get_next(choices):
     if not choices:
@@ -36,7 +38,6 @@ class Union:
         self.sub_type: UnionType = None
         if sub_type:
             self.sub_type = sub_type
-        super().__init__()
 
     def generate(self) -> any:
         if not self.sub_type:
@@ -72,7 +73,6 @@ class Any:
             self.max_depth = max_depth
         if max_len is not None:
             self.max_len = max_len
-        super().__init__()
 
     def create_any(self, base_type, times_called):
         _ALL_TYPES: list = [List, Tuple, Dict, Int, Str, Bool, Float, NoneType]
@@ -138,7 +138,6 @@ class List:
         self.sub_type = sub_type
         if max_len is not None:
             self.max_len = max_len
-        super().__init__()
 
     def generate(self) -> list:
         if not self.sub_type:
@@ -219,7 +218,6 @@ class Dict:
         self.arg_type = arg_type
         if max_keys is not None:
             self.max_keys = max_keys
-        super().__init__()
 
     def generate(self) -> dict:
         if not self.key_type:

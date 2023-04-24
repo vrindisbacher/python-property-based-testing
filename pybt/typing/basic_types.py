@@ -13,9 +13,6 @@ _DEFAULT_MAX_LEN = 10
 
 
 class NoneType:
-    def __init__(self):
-        super().__init__()
-
     def generate(self) -> None:
         return None
 
@@ -31,7 +28,6 @@ class Int:
             self.min = min
         if max is not None:
             self.max = max
-        super().__init__()
 
     def generate(self) -> int:
         return random.randint(self.min, self.max)
@@ -71,7 +67,6 @@ class Float:
             self.min = min
         if max is not None:
             self.max = max
-        super().__init__()
 
     def generate(self) -> float:
         return random.random() * random.randint(self.min, self.max)
@@ -108,7 +103,6 @@ class Str:
         self.max_len: int = _DEFAULT_MAX_LEN
         if max_len is not None:
             self.max_len = max_len
-        super().__init__()
 
     def generate(self) -> str:
         return "".join(
@@ -137,9 +131,6 @@ class Str:
 
 
 class Bool:
-    def __init__(self):
-        super().__init__()
-
     def generate(self) -> bool:
         return [True, False][random.randint(0, 1)]
 
