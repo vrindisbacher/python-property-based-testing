@@ -27,9 +27,9 @@ class Int:
     def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
         self.min: int = _DEFAULT_MIN
         self.max: int = _DEFAULT_MAX
-        if min:
+        if min is not None:
             self.min = min
-        if max:
+        if max is not None:
             self.max = max
         super().__init__()
 
@@ -67,9 +67,9 @@ class Float:
     def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
         self.min: float = _DEFAULT_MIN
         self.max: float = _DEFAULT_MAX
-        if min:
+        if min is not None:
             self.min = min
-        if max:
+        if max is not None:
             self.max = max
         super().__init__()
 
@@ -106,7 +106,7 @@ class Float:
 class Str:
     def __init__(self, max_len=_DEFAULT_MAX_LEN):
         self.max_len: int = _DEFAULT_MAX_LEN
-        if max_len:
+        if max_len is not None:
             self.max_len = max_len
         super().__init__()
 

@@ -68,9 +68,9 @@ class Any:
     def __init__(self, max_depth=_DEFAULT_MAX_DEPTH, max_len=_DEFAULT_MAX_LEN):
         self.max_depth: int = _DEFAULT_MAX_DEPTH
         self.max_len: int = _DEFAULT_MAX_LEN
-        if max_depth:
+        if max_depth is not None:
             self.max_depth = max_depth
-        if max_len:
+        if max_len is not None:
             self.max_len = max_len
         super().__init__()
 
@@ -136,7 +136,7 @@ class List:
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len: int = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
-        if max_len:
+        if max_len is not None:
             self.max_len = max_len
         super().__init__()
 
@@ -178,7 +178,7 @@ class Tuple(List):
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
-        if max_len:
+        if max_len is not None:
             self.max_len = max_len
 
     def generate(self) -> list:
@@ -217,7 +217,7 @@ class Dict:
         self.max_keys: int = _DEFAULT_MAX_LEN
         self.key_type = key_type
         self.arg_type = arg_type
-        if max_keys:
+        if max_keys is not None:
             self.max_keys = max_keys
         super().__init__()
 

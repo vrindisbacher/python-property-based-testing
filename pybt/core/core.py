@@ -1,6 +1,7 @@
 import traceback
 import inspect
 import types
+import typing
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
 from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
@@ -38,7 +39,10 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
             continue
 
         # alias UnionType to PyBT UnionType
-        if isinstance(annot, types.UnionType):
+        if (
+            isinstance(annot, types.UnionType)
+            or type(annot) == typing._UnionGenericAlias
+        ):
             annot = Union[annot]
 
         if not (type(annot) in _PYBT_TYPES or annot in _PYBT_TYPES):
