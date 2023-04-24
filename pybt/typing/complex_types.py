@@ -16,8 +16,6 @@ _DEFAULT_MAX_DEPTH = 2
 _DEFAULT_MAX_LEN = 10
 _DEFAULT_SUB_TYPE = None
 
-T = PythonTyping.TypeVar("T")
-
 
 def _get_next(choices):
     if not choices:
@@ -51,6 +49,12 @@ class Union:
 
     def __str__(self):
         return "pybt.types.Union"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         sub_type = None
@@ -111,6 +115,12 @@ class Any:
     def __str__(self):
         return "pybt.types.Any"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
         max_depth = None
         max_len = None
@@ -154,6 +164,12 @@ class List:
     def __str__(self):
         return "pybt.types.List"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
         sub_type = None
         max_len = None
@@ -186,6 +202,12 @@ class Tuple(List):
 
     def __str__(self):
         return "pybt.types.Tuple"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         sub_type = None
@@ -239,6 +261,12 @@ class Dict:
 
     def __str__(self):
         return "pybt.types.Dict"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         key_type = None

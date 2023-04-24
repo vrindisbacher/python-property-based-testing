@@ -101,8 +101,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_handles_none_with_arged_types(
-        self,
-        x: typing.Union[Int[0, 10], List[Int], Str, Dict[NoneType, List[NoneType]]],
+        self, x: Int[0, 10] | List[Int] | Str | Dict[NoneType, List[NoneType]]
     ):
         assert type(x) in [int, list, str, dict, list]
         if type(x) == int:
@@ -118,7 +117,7 @@ class TestTypeGen(TestCase):
 
     @pybt
     def test_handles_unioned_arged_types(
-        self, x: typing.Union[Int[0, 10], List[Int[0, 10]], Str[10], List[Str[10]]]
+        self, x: Int[0, 10] | List[Int[0, 10]] | Str[10] | List[Str[10]]
     ):
         assert type(x) in [int, list, str, list]
         if type(x) == int:

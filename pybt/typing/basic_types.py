@@ -2,6 +2,7 @@ from pybt.typing.core import _type_check
 
 import random
 import string
+import typing as PythonTyping
 
 """ 
 This file defines pybt types for none, int, str, bool, and float
@@ -19,6 +20,12 @@ class NoneType:
     def __str__(self):
         return "pybt.types.None"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
 
 class Int:
     def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
@@ -34,6 +41,12 @@ class Int:
 
     def __str__(self):
         return "pybt.types.Int"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         min = None
@@ -74,6 +87,12 @@ class Float:
     def __str__(self):
         return "pybt.types.Float"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
         min = None
         max = None
@@ -112,6 +131,12 @@ class Str:
     def __str__(self):
         return "pybt.types.Str"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
         max_len = None
         if type(parameters) != tuple:
@@ -136,6 +161,12 @@ class Bool:
 
     def __str__(self):
         return "pybt.types.Bool"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls):
         raise TypeError("Expected No argument: Bool")
