@@ -5,7 +5,21 @@ import typing
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
 from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
-from pybt.typing.complex_types import List, Tuple, Dict, Any, Union
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Union, Function
+
+_PYBT_TYPES = [
+    NoneType,
+    Int,
+    Str,
+    Bool,
+    Float,
+    List,
+    Tuple,
+    Dict,
+    Any,
+    Union,
+    Function,
+]
 
 
 def _validate_and_return_args(f: callable) -> dict[str, type]:
@@ -17,7 +31,6 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
 
     returns : A dict of str to types representing the args that need to be generated
     """
-    _PYBT_TYPES = [NoneType, Int, Str, Bool, Float, List, Tuple, Dict, Any, Union]
     type_hints = {}
     signature = inspect.signature(f)
     params = signature.parameters

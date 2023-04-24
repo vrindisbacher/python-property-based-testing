@@ -7,7 +7,7 @@ from pybt.typing.core import _flat_union
 
 
 """ 
-This file implements union, any, list, tuple, and dict types for PyBT 
+This file implements union, any, list, tuple, dict, function types for PyBT 
 
 TODO: Ensure that types passed are pybt types 
 """
@@ -272,6 +272,9 @@ class Dict:
         key_type = None
         arg_type = None
         max_keys = None
+        if type(parameters) != tuple:
+            parameters = (parameters,)
+
         if len(parameters) > 3:
             raise TypeError(
                 "Expected 3 arguments: Dict[key_type, arg_type, max_length]"
@@ -288,3 +291,41 @@ class Dict:
             raise TypeError(f"Max # of Keys of {cls.max_keys} is less than or equal 0")
 
         return cls(key_type, arg_type, max_keys)
+
+
+class Function:
+    def __init__(self, return_type=None):
+        self.return_type = return_type
+
+    def generate(self):
+        if not self.return_type:
+            sub_type_choices = [Any()]
+        else:
+            sub_type_choices = _flat_union(self.return_type)
+
+        t = _get_next(sub_type_choices)
+        return lambda *x: t.generate()
+
+    def __str__(self):
+        return "pybt.types.Function"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __class_getitem__(cls, parameters):
+        # Function annotates only its return type
+        return_type = None
+        if type(parameters) != tuple:
+            parameters = (parameters,)
+        if len(parameters) > 1:
+            raise TypeError("Expected 3 arguments: Function[return_type]")
+
+        if len(parameters):
+            return_type = parameters[0]
+
+        return cls(return_type)
+
+    # Function[[], ...]
