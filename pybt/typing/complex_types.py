@@ -25,7 +25,19 @@ def _get_next(choices):
     else:
         choice = choices[0]
 
-    if type(choice) in [Any, List, Tuple, Dict, Int, Str, Bool, Float, NoneType]:
+    if type(choice) in [
+        Any,
+        List,
+        Tuple,
+        Dict,
+        Int,
+        Str,
+        Bool,
+        Float,
+        NoneType,
+        Set,
+        Function,
+    ]:
         return choice
     else:
         return choice()
@@ -98,7 +110,7 @@ class Any:
 
         return base_type[sub_types]
 
-    def generate(self, base_type=None) -> list:
+    def generate(self, base_type=None) -> any:
         _ALL_TYPES: list = [List, Tuple, Int, Str, Bool, Float, NoneType]
         _BASE_TYPES: list = [Int, Str, Bool, Float, NoneType]
         if not base_type:
@@ -189,14 +201,14 @@ class List:
         return cls(sub_type, max_len)
 
 
-class Tuple(List):
+class Tuple:
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
         if max_len is not None:
             self.max_len = max_len
 
-    def generate(self) -> list:
+    def generate(self) -> tuple:
         list_type = List[self.sub_type, self.max_len]
         return tuple(list_type.generate())
 
@@ -217,6 +229,47 @@ class Tuple(List):
 
         if len(parameters) > 2:
             raise TypeError("Expected 2 arguments: Tuple[sub_type, max_length]")
+        if len(parameters):
+            sub_type = parameters[0]
+        if len(parameters) > 1:
+            max_len = parameters[1]
+
+        if max_len and max_len <= 0:
+            raise TypeError(f"Max Length of {cls.max_len} is less than or equal to 0")
+
+        return cls(sub_type, max_len)
+
+
+class Set:
+    def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
+        self.max_len = _DEFAULT_MAX_LEN
+        self.sub_type = sub_type
+        if max_len is not None:
+            self.max_len = max_len
+
+    def generate(self) -> set:
+        if self.sub_type is None: 
+            self.sub_type = Int | Str | Bool | Float | Tuple[Int | Str | Bool | Float]
+        list_type = List[self.sub_type, self.max_len]
+        return set(list_type.generate())
+
+    def __str__(self):
+        return "pybt.types.Set"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __class_getitem__(cls, parameters):
+        sub_type = None
+        max_len = None
+        if type(parameters) != tuple:
+            parameters = (parameters,)
+
+        if len(parameters) > 2:
+            raise TypeError("Expected 2 arguments: Set[sub_type, max_length]")
         if len(parameters):
             sub_type = parameters[0]
         if len(parameters) > 1:

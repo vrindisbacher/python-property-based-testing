@@ -5,7 +5,7 @@ import typing
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
 from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
-from pybt.typing.complex_types import List, Tuple, Dict, Any, Union, Function
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Union, Function, Set
 
 _PYBT_TYPES = [
     NoneType,
@@ -19,6 +19,7 @@ _PYBT_TYPES = [
     Any,
     Union,
     Function,
+    Set
 ]
 
 
