@@ -1,7 +1,7 @@
 from unittest import TestCase
 from pybt.core import pybt
 from pybt.typing.basic_types import Bool, Float, Int, Str, NoneType
-from pybt.typing.complex_types import List, Tuple, Dict
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Function
 
 import typing
 
@@ -131,3 +131,26 @@ class TestTypeGen(TestCase):
                     assert 0 <= el <= 10
                 if type(el) == str:
                     assert len(el) <= 10
+
+    @pybt
+    def test_handles_any(self, a: Any):
+        ...
+
+    @pybt
+    def test_handles_function(self, f: Function[Int], x: Str, y: Str):
+        assert type(f(x, y)) == int
+
+    @pybt
+    def test_handles_function_with_unioned_ret(
+        self, f: Function[Int[0, 10] | Str[5]], x: Float
+    ):
+        ret = f(x)
+        assert type(ret) in [int, str]
+        if type(ret) == int:
+            assert 0 <= ret <= 10
+        if type(ret) == str:
+            assert len(ret) <= 5
+
+    @pybt 
+    def test_handles_generic_function_without_ret(self, f : Function, x: Int): 
+        f(x) 
