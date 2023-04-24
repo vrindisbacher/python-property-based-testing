@@ -5,7 +5,6 @@ import types
 from pybt.core.exception import MistypedSignature, PyBTTestFail
 from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
 from pybt.typing.complex_types import List, Tuple, Dict, Any, Union
-from pybt.typing.core import GenericAlias
 
 
 def _validate_and_return_args(f: callable) -> dict[str, type]:
@@ -17,7 +16,7 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
 
     returns : A dict of str to types representing the args that need to be generated
     """
-    _PYBT_TYPES = [NoneType, Int, Str, Bool, Float, List, Tuple, Dict, Any]
+    _PYBT_TYPES = [NoneType, Int, Str, Bool, Float, List, Tuple, Dict, Any, Union]
     type_hints = {}
     signature = inspect.signature(f)
     params = signature.parameters
@@ -42,13 +41,17 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
         if isinstance(annot, types.UnionType):
             annot = Union[annot]
 
-        if not (annot in _PYBT_TYPES or isinstance(annot, GenericAlias)):
+        if not (type(annot) in _PYBT_TYPES or annot in _PYBT_TYPES):
             raise MistypedSignature(
                 f"""
                 Variable {key} has annotation {annot} which is not a PyBT type. 
                 Please use a PyBT type. 
                 """
             )
+
+        if type(annot) not in _PYBT_TYPES:
+            # instantiate the type
+            annot = annot()
 
         if default_arg == inspect._empty:
             type_hints[key] = annot
@@ -83,9 +86,9 @@ def _drive_tests(
             if hypotheses and (h := hypotheses.get(name)):
                 hypothesis = h
 
-            arg = val.generate(val)
+            arg = val.generate()
             while not hypothesis(arg):
-                arg = val.generate(val)
+                arg = val.generate()
             args_to_pass.append(arg)
 
         try:

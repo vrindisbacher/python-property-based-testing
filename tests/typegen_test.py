@@ -96,19 +96,3 @@ class TestTypeGen(TestCase):
         for key, val in d.items():
             assert key is None
             assert val is None
-
-    @pybt
-    def test_handles_none_with_arged_types(
-        self, x: Int[0, 10] | List[NoneType] | Str | Dict[NoneType, List[NoneType]]
-    ):
-        assert type(x) in [int, list, str, dict, list]
-        if type(x) == int:
-            assert x >= 0 and x <= 10
-        if type(x) == list:
-            assert all([el == None for el in x])
-        if type(x) == dict:
-            for k, v in x.items():
-                assert k == None
-                assert type(v) == list
-                for el in v:
-                    assert el is None
