@@ -1,7 +1,7 @@
 from unittest import TestCase
 from pybt.core import pybt
 from pybt.typing.basic_types import Bool, Float, Int, Str, NoneType
-from pybt.typing.complex_types import List, Tuple, Dict, Any, Function
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Function, Set
 
 import typing
 
@@ -151,6 +151,40 @@ class TestTypeGen(TestCase):
         if type(ret) == str:
             assert len(ret) <= 5
 
+    @pybt
+    def test_handles_generic_function_without_ret(self, f: Function, x: Int):
+        f(x)
+
+    @pybt
+    def test_handles_list_of_functions(self, l: List[Function[Int]]):
+        assert type(l) == list
+        for el in l:
+            assert type(el()) == int
+
+    @pybt
+    def test_handles_list_of_untyped_functions(self, l: List[Function[Int]]):
+        assert type(l) == list
+        for el in l:
+            el()
+
+    @pybt
+    def test_handles_dict_of_functions(self, d: Dict[Int, Function[Int]]):
+        assert type(d) == dict
+        for k, v in d.items():
+            assert type(k) == int
+            v()
+
+    @pybt
+    def test_handles_generic_set(self, s: Set):
+        assert type(s) == set
+
     @pybt 
-    def test_handles_generic_function_without_ret(self, f : Function, x: Int): 
-        f(x) 
+    def test_handles_unioned_set(self, s: Set[Int[0,10] | Tuple[Int]]): 
+        assert type(s) == set 
+        for el in s: 
+            assert type(el) in [int, tuple]
+            if type(el) == int: 
+                assert 0 <= el <= 10
+            if type(el) == tuple: 
+                for e in el: 
+                    assert type(e) == int 
