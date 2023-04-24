@@ -3,6 +3,8 @@ from pybt.core import pybt
 from pybt.typing.basic_types import Bool, Float, Int, Str, NoneType
 from pybt.typing.complex_types import List, Tuple, Dict
 
+import typing
+
 
 class TestTypeGen(TestCase):
     @pybt
@@ -96,3 +98,36 @@ class TestTypeGen(TestCase):
         for key, val in d.items():
             assert key is None
             assert val is None
+
+    @pybt
+    def test_handles_none_with_arged_types(
+        self, x: Int[0, 10] | List[Int] | Str | Dict[NoneType, List[NoneType]]
+    ):
+        assert type(x) in [int, list, str, dict, list]
+        if type(x) == int:
+            assert x >= 0 and x <= 10
+        if type(x) == list:
+            assert all([type(el) == int for el in x])
+        if type(x) == dict:
+            for k, v in x.items():
+                assert k is None
+                assert type(v) == list
+                for el in v:
+                    assert el is None
+
+    @pybt
+    def test_handles_unioned_arged_types(
+        self, x: Int[0, 10] | List[Int[0, 10]] | Str[10] | List[Str[10]]
+    ):
+        assert type(x) in [int, list, str, list]
+        if type(x) == int:
+            assert 0 <= x <= 10
+        if type(x) == str:
+            assert len(x) <= 10
+        if type(x) == list:
+            for el in x:
+                assert type(el) in [int, str]
+                if type(el) == int:
+                    assert 0 <= el <= 10
+                if type(el) == str:
+                    assert len(el) <= 10

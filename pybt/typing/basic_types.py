@@ -1,30 +1,40 @@
-from pybt.typing.core import BaseType, GenericAlias, _type_check
+from pybt.typing.core import _type_check
 
 import random
 import string
+import typing as PythonTyping
 
 """ 
 This file defines pybt types for none, int, str, bool, and float
 """
 
+_DEFAULT_MIN = -1000
+_DEFAULT_MAX = 1000
+_DEFAULT_MAX_LEN = 10
 
-class NoneType(BaseType):
-    def __init__(self):
-        super().__init__()
 
-    def generate(self) -> int:
+class NoneType:
+    def generate(self) -> None:
         return None
 
     def __str__(self):
-        return "pybt.types.Int"
+        return "pybt.types.None"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
 
-class Int(BaseType):
-    min: int = -1000
-    max: int = 1000
-
-    def __init__(self):
-        super().__init__()
+class Int:
+    def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
+        self.min: int = _DEFAULT_MIN
+        self.max: int = _DEFAULT_MAX
+        if min is not None:
+            self.min = min
+        if max is not None:
+            self.max = max
 
     def generate(self) -> int:
         return random.randint(self.min, self.max)
@@ -32,7 +42,15 @@ class Int(BaseType):
     def __str__(self):
         return "pybt.types.Int"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
+        min = None
+        max = None
         if type(parameters) != tuple:
             parameters = (parameters,)
 
@@ -41,28 +59,27 @@ class Int(BaseType):
 
         if len(parameters) == 2:
             _type_check(parameters, (int, int), "Expected 2 ints: Int[min,max]")
-            cls.min = parameters[0]
-            cls.max = parameters[1]
+            min = parameters[0]
+            max = parameters[1]
 
         elif len(parameters) == 1:
             _type_check(parameters, (int,), "Expected an int: Int[Min]")
-            cls.min = parameters[0]
+            min = parameters[0]
 
-        if cls.min > cls.max:
-            raise TypeError(f"Min {cls.min} is greater than Max {cls.max}")
+        if min > max:
+            raise TypeError(f"Min {min} is greater than Max {max}")
 
-        ga = GenericAlias(cls, parameters, cls.generate)
-        ga.min = cls.min
-        ga.max = cls.max
-        return ga
+        return cls(min, max)
 
 
-class Float(BaseType):
-    min: float = -1000
-    max: float = 1000
-
-    def __init__(self):
-        super().__init__()
+class Float:
+    def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
+        self.min: float = _DEFAULT_MIN
+        self.max: float = _DEFAULT_MAX
+        if min is not None:
+            self.min = min
+        if max is not None:
+            self.max = max
 
     def generate(self) -> float:
         return random.random() * random.randint(self.min, self.max)
@@ -70,7 +87,15 @@ class Float(BaseType):
     def __str__(self):
         return "pybt.types.Float"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
+        min = None
+        max = None
         if type(parameters) != tuple:
             parameters = (parameters,)
 
@@ -79,27 +104,24 @@ class Float(BaseType):
 
         if len(parameters) == 2:
             _type_check(parameters, (int, int), "Expected 2 floats: Float[min,max]")
-            cls.min = parameters[0]
-            cls.max = parameters[1]
+            min = parameters[0]
+            max = parameters[1]
 
         elif len(parameters) == 1:
             _type_check(parameters, (int,), "Expected a float: Float[min]")
-            cls.min = parameters[0]
+            min = parameters[0]
 
-        if cls.min > cls.max:
+        if min > max:
             raise TypeError(f"Min {cls.min} is greater than Max {cls.max}")
 
-        ga = GenericAlias(cls, parameters, cls.generate)
-        ga.min = cls.min
-        ga.max = cls.max
-        return ga
+        return cls(min, max)
 
 
-class Str(BaseType):
-    max_len: int = 100
-
-    def __init__(self):
-        super().__init__()
+class Str:
+    def __init__(self, max_len=_DEFAULT_MAX_LEN):
+        self.max_len: int = _DEFAULT_MAX_LEN
+        if max_len is not None:
+            self.max_len = max_len
 
     def generate(self) -> str:
         return "".join(
@@ -109,7 +131,14 @@ class Str(BaseType):
     def __str__(self):
         return "pybt.types.Str"
 
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
+
     def __class_getitem__(cls, parameters):
+        max_len = None
         if type(parameters) != tuple:
             parameters = (parameters,)
 
@@ -118,25 +147,26 @@ class Str(BaseType):
 
         if len(parameters) == 1:
             _type_check(parameters, (int,), "Expected 1 int: Str[max_length]")
-            cls.max_len = parameters[0]
+            max_len = parameters[0]
 
-        if cls.max_len <= 0:
+        if max_len <= 0:
             raise TypeError(f"Max Length of {cls.max_len} is less than or equal 0")
 
-        ga = GenericAlias(cls, parameters, cls.generate)
-        ga.max_len = cls.max_len
-        return ga
+        return cls(max_len)
 
 
-class Bool(BaseType):
-    def __init__(self):
-        super().__init__()
-
+class Bool:
     def generate(self) -> bool:
         return [True, False][random.randint(0, 1)]
 
     def __str__(self):
         return "pybt.types.Bool"
+
+    def __or__(self, other):
+        return PythonTyping.Union[self, other]
+
+    def __ror__(self, other):
+        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls):
         raise TypeError("Expected No argument: Bool")
