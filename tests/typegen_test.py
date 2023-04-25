@@ -3,8 +3,6 @@ from pybt.core import pybt
 from pybt.typing.basic_types import Bool, Float, Int, Str, NoneType
 from pybt.typing.complex_types import List, Tuple, Dict, Any, Function, Set
 
-import typing
-
 
 class TestTypeGen(TestCase):
     @pybt
@@ -178,13 +176,13 @@ class TestTypeGen(TestCase):
     def test_handles_generic_set(self, s: Set):
         assert type(s) == set
 
-    @pybt 
-    def test_handles_unioned_set(self, s: Set[Int[0,10] | Tuple[Int]]): 
-        assert type(s) == set 
-        for el in s: 
+    @pybt
+    def test_handles_unioned_set(self, s: Set[Int[0, 10] | Tuple[Int]]):
+        assert type(s) == set
+        for el in s:
             assert type(el) in [int, tuple]
-            if type(el) == int: 
+            if type(el) == int:
                 assert 0 <= el <= 10
-            if type(el) == tuple: 
-                for e in el: 
-                    assert type(e) == int 
+            if type(el) == tuple:
+                for e in el:
+                    assert type(e) == int
