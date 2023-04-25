@@ -55,6 +55,8 @@ class BaseType:
 
 
 class GenericBase:
+    _pybt_type = True
+
     def __or__(self, other):
         return PythonTyping.Union[self, other]
 
@@ -62,9 +64,7 @@ class GenericBase:
         return PythonTyping.Union[self, other]
 
 
-class _NoneGenericAlias:
-    _pybt_type = True
-
+class _NoneGenericAlias(GenericBase):
     def __init__(self):
         ...
 
@@ -72,9 +72,7 @@ class _NoneGenericAlias:
         return None
 
 
-class _BoolGenericAlias:
-    _pybt_type = True
-
+class _BoolGenericAlias(GenericBase):
     def __init__(self):
         ...
 
@@ -83,8 +81,6 @@ class _BoolGenericAlias:
 
 
 class _IntGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
         self.min: int = _DEFAULT_MIN
         self.max: int = _DEFAULT_MAX
@@ -98,8 +94,6 @@ class _IntGenericAlias(GenericBase):
 
 
 class _FloatGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
         self.min: float = _DEFAULT_MIN
         self.max: float = _DEFAULT_MAX
@@ -113,8 +107,6 @@ class _FloatGenericAlias(GenericBase):
 
 
 class _StringGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, max_len=_DEFAULT_MAX_LEN):
         self.max_len: int = _DEFAULT_MAX_LEN
         if max_len is not None:
@@ -127,8 +119,6 @@ class _StringGenericAlias(GenericBase):
 
 
 class _UnionGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE):
         self.sub_type = None
         if sub_type:
@@ -146,8 +136,6 @@ class _UnionGenericAlias(GenericBase):
 
 
 class _AnyGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, max_depth=_DEFAULT_MAX_DEPTH, max_len=_DEFAULT_MAX_LEN):
         self.max_depth: int = _DEFAULT_MAX_DEPTH
         self.max_len: int = _DEFAULT_MAX_LEN
@@ -163,14 +151,14 @@ class _AnyGenericAlias(GenericBase):
                 _StringGenericAlias,
                 _BoolGenericAlias,
                 _FloatGenericAlias,
-                _NoneGenericAlias
+                _NoneGenericAlias,
             ]
             _base_types = [
                 _IntGenericAlias,
                 _StringGenericAlias,
                 _BoolGenericAlias,
                 _FloatGenericAlias,
-                _NoneGenericAlias
+                _NoneGenericAlias,
             ]
         else:
             _all_types = [
@@ -240,8 +228,6 @@ class _AnyGenericAlias(GenericBase):
 
 
 class _ListGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len: int = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
@@ -262,8 +248,6 @@ class _ListGenericAlias(GenericBase):
 
 
 class _TupleGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
@@ -276,8 +260,6 @@ class _TupleGenericAlias(GenericBase):
 
 
 class _SetGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
@@ -303,8 +285,6 @@ class _SetGenericAlias(GenericBase):
 
 
 class _DictGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(
         self,
         key_type=_DEFAULT_SUB_TYPE,
@@ -342,8 +322,6 @@ class _DictGenericAlias(GenericBase):
 
 
 class _FunctionGenericAlias(GenericBase):
-    _pybt_type = True
-
     def __init__(self, return_type=None):
         self.return_type = return_type
 
