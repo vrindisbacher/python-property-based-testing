@@ -163,14 +163,14 @@ class _AnyGenericAlias(GenericBase):
                 _StringGenericAlias,
                 _BoolGenericAlias,
                 _FloatGenericAlias,
-                _NoneGenericAlias,
+                _NoneGenericAlias
             ]
             _base_types = [
                 _IntGenericAlias,
                 _StringGenericAlias,
                 _BoolGenericAlias,
                 _FloatGenericAlias,
-                _NoneGenericAlias,
+                _NoneGenericAlias
             ]
         else:
             _all_types: list = [
