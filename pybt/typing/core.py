@@ -173,7 +173,7 @@ class _AnyGenericAlias(GenericBase):
                 _NoneGenericAlias
             ]
         else:
-            _all_types: list = [
+            _all_types = [
                 _ListGenericAlias,
                 _TupleGenericAlias,
                 _DictGenericAlias,
@@ -184,7 +184,7 @@ class _AnyGenericAlias(GenericBase):
                 _FloatGenericAlias,
                 _NoneGenericAlias,
             ]
-            _base_types: list = [
+            _base_types = [
                 _IntGenericAlias,
                 _StringGenericAlias,
                 _BoolGenericAlias,
