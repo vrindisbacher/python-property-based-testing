@@ -4,15 +4,23 @@ import types
 import typing
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
-from pybt.typing.complex_types import Union
+from pybt.typing.basic_types import NoneType, Int, Str, Bool, Float
+from pybt.typing.complex_types import List, Tuple, Dict, Any, Union, Function, Set
 
-
-def _try_attr(obj, name):
-    try:
-        getattr(obj, name)
-        return True
-    except AttributeError:
-        return False
+_PYBT_TYPES = [
+    NoneType,
+    Int,
+    Str,
+    Bool,
+    Float,
+    List,
+    Tuple,
+    Dict,
+    Any,
+    Union,
+    Function,
+    Set
+]
 
 
 def _validate_and_return_args(f: callable) -> dict[str, type]:
@@ -51,7 +59,7 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
         ):
             annot = Union[annot]
 
-        if not (_try_attr(annot, "_pybt_type") or _try_attr(annot, "_alias")):
+        if not (type(annot) in _PYBT_TYPES or annot in _PYBT_TYPES):
             raise MistypedSignature(
                 f"""
                 Variable {key} has annotation {annot} which is not a PyBT type. 
@@ -59,9 +67,9 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
                 """
             )
 
-        if _try_attr(annot, "_alias"):
+        if type(annot) not in _PYBT_TYPES:
             # instantiate the type
-            annot = annot._alias()
+            annot = annot()
 
         if default_arg == inspect._empty:
             type_hints[key] = annot
