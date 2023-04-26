@@ -4,7 +4,7 @@ import types
 import typing
 
 from pybt.core.exception import MistypedSignature, PyBTTestFail
-from pybt.typing.complex_types import Union
+from pybt.typing.type_declarations import Union
 
 
 def _try_attr(obj, name):

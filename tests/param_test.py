@@ -1,6 +1,6 @@
 from unittest import TestCase
 from pybt.core import pybt
-from pybt.typing.basic_types import Int, Str, Float 
+from pybt.typing.type_declarations import Int, Str, Float 
 from pybt.core.exception import InvalidArgs, MistypedSignature
 
 

@@ -1,7 +1,18 @@
 from unittest import TestCase
 from pybt.core import pybt
-from pybt.typing.basic_types import Bool, Float, Int, Str, NoneType
-from pybt.typing.complex_types import List, Tuple, Dict, Any, Function, Set
+from pybt.typing.type_declarations import (
+    Bool,
+    Float,
+    Int,
+    Str,
+    NoneType,
+    List,
+    Tuple,
+    Dict,
+    Any,
+    Function,
+    Set,
+)
 
 
 class TestTypeGen(TestCase):

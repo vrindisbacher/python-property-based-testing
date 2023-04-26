@@ -1,8 +1,6 @@
 from unittest import TestCase
-
 from pybt.core import pybt
-from pybt.typing.complex_types import List, Dict, Any
-from pybt.typing.basic_types import Str
+from pybt.typing.type_declarations import List, Dict, Any, Str
 
 
 class TestRevSimple(TestCase):
