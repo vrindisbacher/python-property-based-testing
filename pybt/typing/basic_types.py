@@ -1,52 +1,39 @@
-from pybt.typing.core import _type_check
+from pybt.typing.core import (
+    _BoolGenericAlias,
+    _NoneGenericAlias,
+    BaseType,
+    _FloatGenericAlias,
+    _StringGenericAlias,
+    _IntGenericAlias,
+)
 
-import random
-import string
-import typing as PythonTyping
 
 """ 
 This file defines pybt types for none, int, str, bool, and float
 """
 
-_DEFAULT_MIN = -1000
-_DEFAULT_MAX = 1000
-_DEFAULT_MAX_LEN = 10
+
+def _type_check(args, types, msg):
+    for idx, el in enumerate(args):
+        if type(el) != types[idx]:
+            raise TypeError(msg)
 
 
-class NoneType:
-    def generate(self) -> None:
-        return None
+class NoneType(BaseType):
+    _alias = _NoneGenericAlias
 
     def __str__(self):
         return "pybt.types.None"
 
-    def __or__(self, other):
-        return PythonTyping.Union[self, other]
-
-    def __ror__(self, other):
-        return PythonTyping.Union[self, other]
+    def __class_getitem__(cls, _):
+        raise TypeError("Expected no argument: NoneType")
 
 
-class Int:
-    def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
-        self.min: int = _DEFAULT_MIN
-        self.max: int = _DEFAULT_MAX
-        if min is not None:
-            self.min = min
-        if max is not None:
-            self.max = max
-
-    def generate(self) -> int:
-        return random.randint(self.min, self.max)
+class Int(BaseType):
+    _alias = _IntGenericAlias
 
     def __str__(self):
         return "pybt.types.Int"
-
-    def __or__(self, other):
-        return PythonTyping.Union[self, other]
-
-    def __ror__(self, other):
-        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         min = None
@@ -69,29 +56,14 @@ class Int:
         if min > max:
             raise TypeError(f"Min {min} is greater than Max {max}")
 
-        return cls(min, max)
+        return _IntGenericAlias(min, max)
 
 
-class Float:
-    def __init__(self, min=_DEFAULT_MIN, max=_DEFAULT_MAX):
-        self.min: float = _DEFAULT_MIN
-        self.max: float = _DEFAULT_MAX
-        if min is not None:
-            self.min = min
-        if max is not None:
-            self.max = max
-
-    def generate(self) -> float:
-        return random.random() * random.randint(self.min, self.max)
+class Float(BaseType):
+    _alias = _FloatGenericAlias
 
     def __str__(self):
         return "pybt.types.Float"
-
-    def __or__(self, other):
-        return PythonTyping.Union[self, other]
-
-    def __ror__(self, other):
-        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         min = None
@@ -114,28 +86,14 @@ class Float:
         if min > max:
             raise TypeError(f"Min {cls.min} is greater than Max {cls.max}")
 
-        return cls(min, max)
+        return _FloatGenericAlias(min, max)
 
 
-class Str:
-    def __init__(self, max_len=_DEFAULT_MAX_LEN):
-        self.max_len: int = _DEFAULT_MAX_LEN
-        if max_len is not None:
-            self.max_len = max_len
-
-    def generate(self) -> str:
-        return "".join(
-            random.choices(string.ascii_letters, k=random.randint(1, self.max_len))
-        )
+class Str(BaseType):
+    _alias = _StringGenericAlias
 
     def __str__(self):
         return "pybt.types.Str"
-
-    def __or__(self, other):
-        return PythonTyping.Union[self, other]
-
-    def __ror__(self, other):
-        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls, parameters):
         max_len = None
@@ -152,21 +110,14 @@ class Str:
         if max_len <= 0:
             raise TypeError(f"Max Length of {cls.max_len} is less than or equal 0")
 
-        return cls(max_len)
+        return _StringGenericAlias(max_len)
 
 
-class Bool:
-    def generate(self) -> bool:
-        return [True, False][random.randint(0, 1)]
+class Bool(BaseType):
+    _alias = _BoolGenericAlias
 
     def __str__(self):
         return "pybt.types.Bool"
-
-    def __or__(self, other):
-        return PythonTyping.Union[self, other]
-
-    def __ror__(self, other):
-        return PythonTyping.Union[self, other]
 
     def __class_getitem__(cls):
         raise TypeError("Expected No argument: Bool")
