@@ -145,7 +145,7 @@ class _AnyGenericAlias(GenericBase):
             self.max_len = max_len
 
     def create_any(self, base_type, times_called):
-        if type(base_type) == _SetGenericAlias or type(base_type) == _SetGenericAlias:
+        if type(base_type) == _SetGenericAlias:
             _all_types = [
                 _IntGenericAlias,
                 _StringGenericAlias,
@@ -199,7 +199,7 @@ class _AnyGenericAlias(GenericBase):
         base_type.sub_type = sub_types
         return base_type
 
-    def generate(self, base_type=None) -> any:
+    def generate(self) -> any:
         _ALL_TYPES: list = [
             _ListGenericAlias,
             _TupleGenericAlias,
@@ -217,8 +217,7 @@ class _AnyGenericAlias(GenericBase):
             _FloatGenericAlias,
             _NoneGenericAlias,
         ]
-        if not base_type:
-            base_type = _ALL_TYPES[random.randint(0, len(_ALL_TYPES) - 1)]()
+        base_type = _ALL_TYPES[random.randint(0, len(_ALL_TYPES) - 1)]()
 
         if type(base_type) in _BASE_TYPES:
             return base_type.generate()
