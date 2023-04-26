@@ -29,7 +29,7 @@ class Union(BaseType):
             parameters = (parameters,)
 
         if len(parameters) > 1:
-            raise TypeError("Expected 2 arguments: Any[max_depth, max_length]")
+            raise TypeError("Expected 1 argument: Union[sub_type]")
         if len(parameters):
             sub_type = parameters[0]
 
