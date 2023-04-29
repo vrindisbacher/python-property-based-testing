@@ -6,7 +6,39 @@ from pybt.core.exception import InvalidArgs, MistypedSignature
 
 class ParamTestCase(TestCase):
     @pybt
-    def test_return_annotations(self, i: Int) -> float:
+    def test_return_annotation_float_given_int(self, i: Int) -> float:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_float_given_string(self, i: Str) -> float:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_float_given_float(self, i: Float) -> float:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_str_given_int(self, i: Int) -> str:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_str_given_str(self, i: Str) -> str:
+        assert i == i
+    
+    @pybt
+    def test_return_annotation_str_given_float(self, i: Float) -> str:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_int_given_int(self, i: Int) -> int:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_int_given_str(self, i: Str) -> int:
+        assert i == i
+
+    @pybt
+    def test_return_annotation_int_given_float(self, i: Float) -> int:
         assert i == i
 
     @pybt
