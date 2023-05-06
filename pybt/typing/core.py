@@ -53,6 +53,10 @@ class BaseType:
     def __call__(self, *args, **kwds):
         raise TypeError(f"{self} object is not instantiable")
 
+    @classmethod
+    def generate(cls):
+        return cls._alias().generate()
+
 
 class GenericBase:
     _pybt_type = True

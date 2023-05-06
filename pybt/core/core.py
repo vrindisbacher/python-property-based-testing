@@ -59,10 +59,6 @@ def _validate_and_return_args(f: callable) -> dict[str, type]:
                 """
             )
 
-        if _try_attr(annot, "_alias"):
-            # instantiate the type
-            annot = annot._alias()
-
         if default_arg == inspect._empty:
             type_hints[key] = annot
 
