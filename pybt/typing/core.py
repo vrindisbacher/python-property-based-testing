@@ -3,6 +3,8 @@ import typing as PythonTyping
 import random
 import string
 
+from pybt.core.exception import MistypedSignature
+
 _DEFAULT_MAX_DEPTH = 2
 _DEFAULT_MAX_LEN = 10
 _DEFAULT_SUB_TYPE = None
@@ -11,6 +13,24 @@ _DEFAULT_SUB_TYPE = None
 _DEFAULT_MIN = -1000
 _DEFAULT_MAX = 1000
 _DEFAULT_MAX_LEN = 10
+
+
+def _ensure_annot_is_pybt_type(key: str, annot: UnionType):
+    """
+    Inspects the types that have been unioned together to ensure that they are valid
+
+    parameter annot: The union type annotation
+    returns : A boolean indicating whether the typing is valid or not
+    """
+    sub_types = PythonTyping.get_args(annot)
+    for type in sub_types:
+        if not (_try_attr(type, "_pybt_type") or _try_attr(type, "_alias")):
+            raise MistypedSignature(
+                f"""
+                {key} was given subtype with type {type} which is not a PyBT type. 
+                Please use a PyBT type. 
+                """
+            )
 
 
 def _try_attr(obj, name):
@@ -124,9 +144,8 @@ class _StringGenericAlias(GenericBase):
 
 class _UnionGenericAlias(GenericBase):
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE):
-        self.sub_type = None
-        if sub_type:
-            self.sub_type = sub_type
+        self.sub_type = sub_type
+        _ensure_annot_is_pybt_type("Union", self.sub_type)
 
     def generate(self) -> any:
         if not self.sub_type:
@@ -234,6 +253,7 @@ class _ListGenericAlias(GenericBase):
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len: int = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
+        _ensure_annot_is_pybt_type("List", self.sub_type)
         if max_len is not None:
             self.max_len = max_len
 
@@ -254,6 +274,7 @@ class _TupleGenericAlias(GenericBase):
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
+        _ensure_annot_is_pybt_type("Tuple", self.sub_type)
         if max_len is not None:
             self.max_len = max_len
 
@@ -266,6 +287,7 @@ class _SetGenericAlias(GenericBase):
     def __init__(self, sub_type=_DEFAULT_SUB_TYPE, max_len=_DEFAULT_MAX_LEN):
         self.max_len = _DEFAULT_MAX_LEN
         self.sub_type = sub_type
+        _ensure_annot_is_pybt_type("Set", self.sub_type)
         if max_len is not None:
             self.max_len = max_len
 
@@ -296,7 +318,9 @@ class _DictGenericAlias(GenericBase):
     ):
         self.max_keys: int = _DEFAULT_MAX_LEN
         self.key_type = key_type
+        _ensure_annot_is_pybt_type("Dictionary Key", self.key_type)
         self.arg_type = arg_type
+        _ensure_annot_is_pybt_type("Dictionary Args", self.arg_type)
         if max_keys is not None:
             self.max_keys = max_keys
 
@@ -327,6 +351,7 @@ class _DictGenericAlias(GenericBase):
 class _FunctionGenericAlias(GenericBase):
     def __init__(self, return_type=None):
         self.return_type = return_type
+        _ensure_annot_is_pybt_type("Function", self.return_type)
 
     def generate(self):
         if not self.return_type:
