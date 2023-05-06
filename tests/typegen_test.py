@@ -12,6 +12,7 @@ from pybt.typing.type_declarations import (
     Any,
     Function,
     Set,
+    Optional,
 )
 
 
@@ -197,3 +198,24 @@ class TestTypeGen(TestCase):
             if type(el) == tuple:
                 for e in el:
                     assert type(e) == int
+
+    @pybt
+    def test_handles_optional_type(self, i: Optional[Int]):
+        assert type(i) == int or i is None
+
+    @pybt
+    def test_handles_nested_optional_type(self, l: List[Optional[Str | Int]]):
+        assert type(l) == list
+        for el in l:
+            assert type(el) in [str, int] or el is None
+
+    @pybt
+    def test_handles_weird_nested_optional_type(
+        self, l: List[Optional[List[Optional[Int]]]]
+    ):
+        assert type(l) == list
+        for el in l:
+            assert type(el) == list or el is None
+            if type(el) == list:
+                for e in el:
+                    assert type(e) == int or e is None
