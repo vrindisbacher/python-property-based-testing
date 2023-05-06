@@ -1,6 +1,6 @@
 from unittest import TestCase
 from pybt.core import pybt
-from pybt.typing.type_declarations import Int, Str, Float 
+from pybt.typing.type_declarations import Int, Str, Float, List
 from pybt.core.exception import InvalidArgs, MistypedSignature
 
 
@@ -86,3 +86,125 @@ class ParamTestCase(TestCase):
         assert type(x) == int
         assert type(i) == int
         assert keyword is None
+
+    def test_invalid_int_params(self):
+        try:
+
+            @pybt
+            def _test(i: int):
+                ...
+
+            _test()
+            self.fail("This is an int which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_str_params(self):
+        try:
+
+            @pybt
+            def _test(i: str):
+                ...
+
+            _test()
+            self.fail("This is a str which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_bool_params(self):
+        try:
+
+            @pybt
+            def _test(i: bool):
+                ...
+
+            _test()
+            self.fail("This is a bool which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_float_params(self):
+        try:
+
+            @pybt
+            def _test(i: float):
+                ...
+
+            _test()
+            self.fail("This is a float which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_list_params(self):
+        try:
+
+            @pybt
+            def _test(i: list):
+                ...
+
+            _test()
+            self.fail("This is a list which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_dict_params(self):
+        try:
+
+            @pybt
+            def _test(i: dict):
+                ...
+
+            _test()
+            self.fail("This is a dict which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_tuple_params(self):
+        try:
+
+            @pybt
+            def _test(i: tuple):
+                ...
+
+            _test()
+            self.fail("This is a tuple which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_function_params(self):
+        try:
+
+            @pybt
+            def _test(i: callable):
+                ...
+
+            _test()
+            self.fail("This is a callable which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_any_params(self):
+        try:
+
+            @pybt
+            def _test(i: any):
+                ...
+
+            _test()
+            self.fail("This is any which is not a PyBT type. This should fail")
+        except MistypedSignature:
+            ...
+
+    def test_invalid_union_params(self):
+        try:
+
+            @pybt
+            def _test(i: List[int | str | list[bool]]):
+                ...
+
+            _test()
+            self.fail(
+                "This is an invalid union type because it has an int, str, and list of booleans, which are not PyBT types. This should fail"
+            )
+        except MistypedSignature:
+            ...
