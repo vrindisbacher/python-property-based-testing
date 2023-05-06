@@ -3,6 +3,8 @@ from pybt.core import pybt
 from pybt.typing.type_declarations import Int, Str, Float, List
 from pybt.core.exception import InvalidArgs, MistypedSignature
 
+from typing import Optional
+
 
 class ParamTestCase(TestCase):
     @pybt
@@ -206,5 +208,41 @@ class ParamTestCase(TestCase):
             self.fail(
                 "This is an invalid union type because it has an int, str, and list of booleans, which are not PyBT types. This should fail"
             )
+        except MistypedSignature:
+            ...
+
+    def test_handles_optional_type(self):
+        try:
+
+            @pybt
+            def _test(i: Optional[Int]):
+                ...
+
+            _test()
+            self.fail("This is a invalid type because Optional is not a pybt type")
+        except MistypedSignature:
+            ...
+
+    def test_handles_nested_optional_type(self):
+        try:
+
+            @pybt
+            def _test(l: List[Optional[Str | Int]]):
+                ...
+
+            _test()
+            self.fail("This is a invalid type because Optional is not a pybt type")
+        except MistypedSignature:
+            ...
+
+    def test_handles_weird_nested_optional_type(self):
+        try:
+
+            @pybt
+            def _test(l: List[Optional[List[Optional[Int]]]]):
+                ...
+
+            _test()
+            self.fail("This is a invalid type because Optional is not a pybt type")
         except MistypedSignature:
             ...

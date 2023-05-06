@@ -154,6 +154,25 @@ class Union(BaseType):
         return _UnionGenericAlias(sub_type)
 
 
+class Optional(BaseType):
+    _alias = _UnionGenericAlias
+
+    def __str__(self):
+        return "pybt.types.Optional"
+
+    def __class_getitem__(cls, parameters):
+        sub_type = None
+        if type(parameters) != tuple:
+            parameters = (parameters,)
+
+        if len(parameters) > 1:
+            raise TypeError("Expected 1 argument: Union[sub_type]")
+        if len(parameters):
+            sub_type = Union[parameters[0] | NoneType]
+
+        return _UnionGenericAlias(sub_type)
+
+
 class Any(BaseType):
     _alias = _AnyGenericAlias
 
